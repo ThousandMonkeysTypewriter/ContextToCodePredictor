@@ -8,6 +8,10 @@ import numpy as np
 import sys
 import time
 
+DATA_PATH = "tasks/env/data/train.pik"
+LOG_PATH = "log/"
+CKPT_PATH = "log/model.ckpt"
+
 CONFIG = {
     "ENVIRONMENT_ROW": 4,         # Input 1, Input 2, Carry, Output
     "ENVIRONMENT_COL": 10,        # 10-Digit Maximum for Addition Task
@@ -17,7 +21,7 @@ CONFIG = {
     "ARGUMENT_DEPTH": 11,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
     "DEFAULT_ARG_VALUE": 10,      # Default Argument Value
 
-    "PROGRAM_NUM": 6,             # Maximum Number of Subroutines
+    "PROGRAM_NUM": 8,             # Maximum Number of Subroutines
     "PROGRAM_KEY_SIZE": 5,        # Size of the Program Keys
     "PROGRAM_EMBEDDING_SIZE": 10  # Size of the Program Embeddings
 }
@@ -73,7 +77,11 @@ class ScratchPad():           # Addition Environment
 
     def reduce1(self):
         temp = self[self.in1_ptr] - self[self.in2_ptr] - self[self.carry_ptr]
-        return temp % 10, temp / 10
+        if temp < 0:
+            carry = 1
+        else:
+            carry = 0;
+        return temp % 10, carry
 
     def write_carry(self, carry_val, debug=False):
         carry_row, carry_col = self.carry_ptr
