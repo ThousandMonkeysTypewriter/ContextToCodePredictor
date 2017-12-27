@@ -18,21 +18,23 @@ class Trace():
         parameters.
         """
         self.in1, self.in2, self.debug = in1, in2, debug
-        self.trace, self.scratch = [], ScratchPad(in1, in2)
 
         # Check answer
         if command == "ADD":
             # Build Execution Trace
             self.build_add()
-            true_ans = self.in1 + self.in2
+            scratch = ScratchPad(in1, in2, self.in1 + self.in2)
+            self.trace, self.scratch = [], scratch
+
         elif command == "REDUCE":
             # Build Execution Trace
             self.build_reduce()
-            true_ans = self.in1 - self.in2
+            scratch = ScratchPad(in1, in2, self.in1 - self.in2)
+            self.trace, self.scratch = [], scratch
 
         trace_ans = int("".join(map(str, map(int, self.scratch[3]))))
 
-        assert(true_ans == trace_ans), "%s not equals %s in %s %s %s" % (true_ans, trace_ans, in1, command, in2)
+        assert(scratch.true_ans == trace_ans), "%s not equals %s in %s %s %s" % (true_ans, trace_ans, in1, command, in2)
 
     def build_add(self):
         """

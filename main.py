@@ -32,11 +32,11 @@ def main(_):
 
         # Train Model (if necessary)
         if FLAGS.do_train:
-            train_addition(FLAGS.num_epochs)
+            train_addition(FLAGS.num_epochs, command)
 
         # Evaluate Model
         if FLAGS.do_eval:
-            evaluate_addition()
+            evaluate_addition(command)
 
 
 if __name__ == "__main__":

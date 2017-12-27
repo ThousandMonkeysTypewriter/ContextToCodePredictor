@@ -40,9 +40,10 @@ PROGRAM_SET = [
 PROGRAM_ID = {x[0]: i for i, x in enumerate(PROGRAM_SET)}
 
 class ScratchPad():           # Addition Environment
-    def __init__(self, in1, in2, rows=CONFIG["ENVIRONMENT_ROW"], cols=CONFIG["ENVIRONMENT_COL"]):
+    def __init__(self, in1, in2, true_ans_, rows=CONFIG["ENVIRONMENT_ROW"], cols=CONFIG["ENVIRONMENT_COL"]):
         # Setup Internal ScratchPad
         self.rows, self.cols = rows, cols
+        self.true_ans = true_ans_
         self.scratchpad = np.zeros((self.rows, self.cols), dtype=np.int8)
 
         # Initialize ScratchPad In1, In2
@@ -51,6 +52,8 @@ class ScratchPad():           # Addition Environment
         # Pointers initially all start at the right
         self.in1_ptr, self.in2_ptr, self.carry_ptr, self.out_ptr = self.ptrs = \
             [(x, -1) for x in range(4)]
+
+        # self.out_ptr = [(x, -1) for x in range(4)]
 
     def init_scratchpad(self, in1, in2):
         """
@@ -106,6 +109,7 @@ class ScratchPad():           # Addition Environment
         print 'Carry  :' + " " * 5 + new_strs[2]
         print '-' * line_length
         print 'Output :' + " " * 5 + new_strs[3]
+        print 'True out:' + " " * 5 + str(self.true_ans)
         print ''
         time.sleep(.1)
         sys.stdout.flush()
@@ -134,6 +138,7 @@ class ScratchPad():           # Addition Environment
         if prog_id == 0:               # MOVE!
             ptr, lr = args
             lr = (lr * 2) - 1
+
             if ptr == 0:
                 self.in1_ptr = (self.in1_ptr[0], self.in1_ptr[1] + lr)
             elif ptr == 1:

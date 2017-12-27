@@ -15,7 +15,7 @@ WRITE_OUT, WRITE_CARRY = 0, 1
 IN1_PTR, IN2_PTR, CARRY_PTR, OUT_PTR = range(4)
 LEFT, RIGHT = 0, 1
 
-def train_addition(epochs, verbose=0):
+def train_addition(epochs, command, verbose=0):
     """
     Instantiates an Addition Core, NPI, then loads and fits model to data.
 
@@ -47,8 +47,13 @@ def train_addition(epochs, verbose=0):
             npi.reset_state()
 
             # Setup Environment
-            in1, in2, steps = data[i]
-            scratch = ScratchPad(in1, in2)
+            in2_, in1_, steps = data[i]
+
+            in1 = max(in2_, in1_)
+            in2 = min(in2_, in1_)
+
+            scratch = ScratchPad(in1, in2, in1-in2)
+
             x, y = steps[:-1], steps[1:]
             # Run through steps, and fit!
             step_def_loss, step_arg_loss, term_acc, prog_acc, = 0.0, 0.0, 0.0, 0.0
@@ -61,8 +66,12 @@ def train_addition(epochs, verbose=0):
                 if prog_in_id == MOVE_PID or prog_in_id == WRITE_PID:
                     scratch.execute(prog_in_id, arg)
 
+                # Print Environment
+                # scratch.pretty_print()
+
                 # Get Environment, Argument Vectors
                 env_in = [scratch.get_env()]
+
                 arg_in, arg_out = [get_args(arg, arg_in=True)], get_args(arg_out, arg_in=False)
                 prog_in, prog_out = [[prog_in_id]], [prog_out_id]
                 term_out = [1] if term_out else [0]

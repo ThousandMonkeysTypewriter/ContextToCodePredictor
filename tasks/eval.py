@@ -16,7 +16,7 @@ PTRS = {0: "IN1_PTR", 1: "IN2_PTR", 2: "CARRY_PTR", 3: "OUT_PTR"}
 R_L = {0: "LEFT", 1: "RIGHT"}
 
 
-def evaluate_addition():
+def evaluate_addition(command):
     """
     Load NPI Model from Checkpoint, and initialize REPL, for interactive carry-addition.
     """
@@ -36,17 +36,32 @@ def evaluate_addition():
         saver.restore(sess, CKPT_PATH)
 
         # Run REPL
-        repl(sess, npi, data)
-        repeat()
+        eq = 0
+        not_eq=0
+        for x in range(0, 10):
+            res = ""
+            try:
+                res = repl(sess, npi, data, command)
+            except:
+                print ""
+            if res:
+               eq+=1
+            else:
+               not_eq+=1
+        print(eq, not_eq)
+        # repeat()
 
-def repl(session, npi, data):
-        inpt = raw_input('Enter Numbers, or Hit Enter for Random Pair: ')
+def repl(session, npi, data, command):
+        # inpt = raw_input('Enter Numbers, or Hit Enter for Random Pair: ')
 
-        if inpt == "":
-            x, y, _ = data[np.random.randint(len(data))]
+        # if inpt == "":
+        x_, y_, _ = data[np.random.randint(len(data))]
 
-        else:
-            x, y = map(int, inpt.split())
+        # else:
+        #     x_, y_ = map(int, inpt.split())
+
+        y = min(x_, y_)
+        x = max(x_, y_)
 
         f = open('log/numbers.txt', 'r+')
         f.truncate()
@@ -62,8 +77,8 @@ def repl(session, npi, data):
         npi.reset_state()
 
         # Setup Environment
-        scratch = ScratchPad(x, y)
-        prog_name, prog_id, term = 'REDUCE', 2, False
+        scratch = ScratchPad(x, y, x-y)
+        prog_name, prog_id, term =  command, 2, False
 
         cont = 'c'
 
@@ -84,11 +99,11 @@ def repl(session, npi, data):
             else:
                 a_str = "[]"
 
-            print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(term))
-            print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
-                                                              scratch.in2_ptr[1],
-                                                              scratch.carry_ptr[1],
-                                                              scratch.out_ptr[1])
+            # print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(term))
+            # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
+            #                                                   scratch.in2_ptr[1],
+            #                                                   scratch.carry_ptr[1],
+            #                                                   scratch.out_ptr[1])
 
             # Update Environment if MOVE or WRITE
             if prog_id == MOVE_PID or prog_id == WRITE_PID:
@@ -99,7 +114,7 @@ def repl(session, npi, data):
                     myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + "\n")
 
             # Print Environment
-            scratch.pretty_print()
+            # scratch.pretty_print()
 
             # Get Environment, Argument Vectors
             # Current step
@@ -110,20 +125,18 @@ def repl(session, npi, data):
 
             # Next step
             if np.argmax(t) == 1:
-                print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(True))
-                print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
-                                                                  scratch.in2_ptr[1],
-                                                                  scratch.carry_ptr[1],
-                                                                  scratch.out_ptr[1])
+                # print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(True))
+                # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
+                #                                                   scratch.in2_ptr[1],
+                #                                                   scratch.carry_ptr[1],
+                #                                                   scratch.out_ptr[1])
                 # Update Environment if MOVE or WRITE
                 # if prog_id == MOVE_PID or prog_id == WRITE_PID:
                 #     scratch.execute(prog_id, arg)
 
                 output = int("".join(map(str, map(int, scratch[3]))))
-                print "Model Output: %s + %s = %s" % (str(x), str(y), str(output))
-                print "Correct Out : %s + %s = %s" % (str(x), str(y), str(x + y))
-                print "Correct!" if output == (x + y) else "Incorrect!"
-                cont = "n"
+                print "Output:  %s & %s" % (str(output), str(x - y))
+                return output == (x - y)
 
             else:
                 prog_id = np.argmax(n_p)
@@ -137,7 +150,7 @@ def repeat():
             fl = f.readline()
             x, y = fl.rstrip('\n').split(",")
             # print(x,y)
-            scratch = ScratchPad(x, y)
+            scratch = ScratchPad(x, y, int(x)-int(y))
 
         lines = [line.rstrip('\n') for line in open("log/prog.txt")]
 
