@@ -7,6 +7,7 @@ handling.
 from tasks.env.config import CONFIG
 import tensorflow as tf
 import tflearn
+import numpy as np
 
 
 class AdditionCore():
@@ -54,6 +55,67 @@ class AdditionCore():
         out = tflearn.fully_connected(elu, self.state_dim)
         return out
 
+    def get_incoming_shape(self, incoming):
+        """ Returns the incoming data shape """
+        if isinstance(incoming, tf.Tensor):
+            return incoming.get_shape().as_list()
+        elif type(incoming) in [np.array, list, tuple]:
+            return np.shape(incoming)
+        else:
+            raise Exception("Invalid incoming layer.")
+
+    def embedding(self, incoming, input_dim, output_dim, weights_init='truncated_normal',
+                  trainable=True, restore=True, name="Embedding"):
+        """ Embedding.
+
+        Embedding layer for a sequence of ids.
+
+        Input:
+            2-D Tensor [samples, ids].
+
+        Output:
+            3-D Tensor [samples, embedded_ids, features].
+
+        Arguments:
+            incoming: Incoming 2-D Tensor.
+            input_dim: list of `int`. Vocabulary size (number of ids).
+            output_dim: list of `int`. Embedding size.
+            weights_init: `str` (name) or `Tensor`. Weights initialization.
+                (see tflearn.initializations) Default: 'truncated_normal'.
+            trainable: `bool`. If True, weights will be trainable.
+            restore: `bool`. If True, this layer weights will be restored when
+                loading a model
+            name: A name for this layer (optional). Default: 'Embedding'.
+
+        """
+
+        input_shape = self.get_incoming_shape(incoming)
+        assert len(input_shape) == 2, "Incoming Tensor shape must be 2-D"
+        n_inputs = int(np.prod(input_shape[1:]))
+
+        W_init = weights_init
+        if isinstance(weights_init, str):
+            W_init = tflearn.initializations.get(weights_init)()
+
+        with tf.name_scope(name) as scope:
+            with tf.device('/cpu:0'):
+                W = tf.get_variable(scope + "W", shape=[input_dim, output_dim], dtype=tf.float32,
+                                      initializer=W_init,
+                                      trainable=trainable)
+                tf.add_to_collection(tf.GraphKeys.LAYER_VARIABLES + '/' + scope, W)
+
+            inference = tf.cast(incoming, tf.int32)
+            inference = tf.nn.embedding_lookup(W, inference)
+            inference = tf.transpose(inference, [1, 0, 2])
+            inference = tf.reshape(inference, shape=[-1, output_dim])
+            inference = tf.split(inference, n_inputs)
+
+        # TODO: easy access those var
+        # inference.W = W
+        # inference.scope = scope
+
+        return inference
+
     def build_program_store(self):
         """
         Build the Program Embedding (M_prog) that takes in a specific Program ID (prg_in), and
@@ -61,6 +123,8 @@ class AdditionCore():
 
         Reference: Reed, de Freitas [4]
         """
-        embedding = tflearn.embedding(self.prg_in, CONFIG["PROGRAM_NUM"],
+        print(self.prg_in, CONFIG["PROGRAM_NUM"],
+                                      CONFIG["PROGRAM_EMBEDDING_SIZE"], "Program_Embedding")
+        embedding = self.embedding(self.prg_in, CONFIG["PROGRAM_NUM"],
                                       CONFIG["PROGRAM_EMBEDDING_SIZE"], name="Program_Embedding")
         return embedding
