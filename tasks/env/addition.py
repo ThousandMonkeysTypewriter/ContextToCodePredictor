@@ -4,7 +4,7 @@ addition.py
 Core task-specific model definition file. Sets up encoder model, program embeddings, argument
 handling.
 """
-from tasks.env.config import CONFIG
+from tasks.env.config import CONFIG, get_incoming_shape
 import tensorflow as tf
 import tflearn
 import numpy as np
@@ -55,15 +55,6 @@ class AdditionCore():
         out = tflearn.fully_connected(elu, self.state_dim)
         return out
 
-    def get_incoming_shape(self, incoming):
-        """ Returns the incoming data shape """
-        if isinstance(incoming, tf.Tensor):
-            return incoming.get_shape().as_list()
-        elif type(incoming) in [np.array, list, tuple]:
-            return np.shape(incoming)
-        else:
-            raise Exception("Invalid incoming layer.")
-
     def embedding(self, incoming, input_dim, output_dim, weights_init='truncated_normal',
                   trainable=True, restore=True, name="Embedding"):
         """ Embedding.
@@ -89,7 +80,7 @@ class AdditionCore():
 
         """
 
-        input_shape = self.get_incoming_shape(incoming)
+        input_shape = get_incoming_shape(incoming)
         assert len(input_shape) == 2, "Incoming Tensor shape must be 2-D"
         n_inputs = int(np.prod(input_shape[1:]))
 
@@ -123,8 +114,6 @@ class AdditionCore():
 
         Reference: Reed, de Freitas [4]
         """
-        print(self.prg_in, CONFIG["PROGRAM_NUM"],
-                                      CONFIG["PROGRAM_EMBEDDING_SIZE"], "Program_Embedding")
         embedding = self.embedding(self.prg_in, CONFIG["PROGRAM_NUM"],
                                       CONFIG["PROGRAM_EMBEDDING_SIZE"], name="Program_Embedding")
         return embedding

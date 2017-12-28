@@ -38,7 +38,7 @@ def train_addition(epochs, command, verbose=0):
 
     # Initialize TF Session
     sess = tf.Session()
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
 
     # Start Training
     for ep in range(1, epochs + 1):

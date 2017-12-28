@@ -22,7 +22,7 @@ def evaluate_addition(command):
     """
     with tf.Session() as sess:
         # Load Data
-        with open(DATA_PATH, 'r') as f:
+        with open(DATA_PATH, 'rb') as f:
             data = pickle.load(f)
 
         # Initialize Addition Core
@@ -118,7 +118,7 @@ def repl(session, npi, data, command):
                     myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + "\n")
 
             # Print Environment
-            # scratch.pretty_print()
+            scratch.pretty_print()
 
             # Get Environment, Argument Vectors
             # Current step

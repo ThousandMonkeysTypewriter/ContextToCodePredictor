@@ -7,6 +7,7 @@ Embedding Information, etc.
 import numpy as np
 import sys
 import time
+import tensorflow as tf
 
 DATA_PATH = "tasks/env/data/train.pik"
 LOG_PATH = "log/"
@@ -38,6 +39,15 @@ PROGRAM_SET = [
 ]
 
 PROGRAM_ID = {x[0]: i for i, x in enumerate(PROGRAM_SET)}
+
+def get_incoming_shape(incoming):
+    """ Returns the incoming data shape """
+    if isinstance(incoming, tf.Tensor):
+        return incoming.get_shape().as_list()
+    elif type(incoming) in [np.array, list, tuple]:
+        return np.shape(incoming)
+    else:
+        raise Exception("Invalid incoming layer.")
 
 class ScratchPad():           # Addition Environment
     def __init__(self, in1, in2, true_ans_, rows=CONFIG["ENVIRONMENT_ROW"], cols=CONFIG["ENVIRONMENT_COL"]):
@@ -171,7 +181,6 @@ class Arguments():             # Program Arguments
         self.args = args
         self.arg_vec = np.zeros((num_args, arg_depth), dtype=np.float32)
 
-
 def get_args(args, arg_in=True):
     if arg_in:
         arg_vec = np.zeros((CONFIG["ARGUMENT_NUM"], CONFIG["ARGUMENT_DEPTH"]), dtype=np.int32)
@@ -188,4 +197,6 @@ def get_args(args, arg_in=True):
         for i in range(CONFIG["ARGUMENT_NUM"]):
             arg_vec[i][CONFIG["DEFAULT_ARG_VALUE"]] = 1
     return arg_vec.flatten() if arg_in else arg_vec
+
+
 
