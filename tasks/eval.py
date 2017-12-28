@@ -25,6 +25,13 @@ def evaluate_addition(command):
         with open(DATA_PATH, 'r') as f:
             data = pickle.load(f)
 
+        # Start Training
+        # for i in range(len(data)):
+        #     in2_, in1_, steps = data[i]
+        #
+        #     if (in2_==427748365 or 427748365==in1_):
+        #         print(steps)
+
         # Initialize Addition Core
         core = AdditionCore()
 
@@ -63,6 +70,8 @@ def repl(session, npi, data, command):
         y = min(x_, y_)
         x = max(x_, y_)
 
+        # y, x = 427748365, 8515869639
+
         f = open('log/numbers.txt', 'r+')
         f.truncate()
 
@@ -73,11 +82,14 @@ def repl(session, npi, data, command):
             myfile.write(str(x)+","+str(y) + "\n")
 
         # Reset NPI States
-        print ""
         npi.reset_state()
 
         # Setup Environment
-        scratch = ScratchPad(x, y, x-y)
+        if (command == "ADD"):
+            scratch = ScratchPad(x, y, x + y)
+        elif (command == "REDUCE"):
+            scratch = ScratchPad(x, y, x - y)
+
         prog_name, prog_id, term =  command, 2, False
 
         cont = 'c'
@@ -111,10 +123,10 @@ def repl(session, npi, data, command):
 
             if arg:
                 with open("log/prog.txt", "a") as myfile:
-                    myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + "\n")
+                    myfile.write(str(PROGRAM_SET[prog_id][0]) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + "\n")
 
             # Print Environment
-            # scratch.pretty_print()
+            scratch.pretty_print()
 
             # Get Environment, Argument Vectors
             # Current step
@@ -135,8 +147,8 @@ def repl(session, npi, data, command):
                 #     scratch.execute(prog_id, arg)
 
                 output = int("".join(map(str, map(int, scratch[3]))))
-                print "Output:  %s & %s" % (str(output), str(x - y))
-                return output == (x - y)
+                print "Input:  %s, %s, Output:  %s, %s" % (str(x), str(y), str(output), scratch.true_ans)
+                return str(output) == str(scratch.true_ans)
 
             else:
                 prog_id = np.argmax(n_p)

@@ -17,7 +17,7 @@ tf.app.flags.DEFINE_integer("num_test", 100, "Number of test examples to generat
 
 tf.app.flags.DEFINE_boolean("do_train", False, "Boolean whether to continue training model.")
 tf.app.flags.DEFINE_boolean("do_eval", True, "Boolean whether to perform model evaluation.")
-tf.app.flags.DEFINE_integer("num_epochs", 5, "Number of training epochs to perform.")
+tf.app.flags.DEFINE_integer("num_epochs", 3, "Number of training epochs to perform.")
 
 
 def main(_):

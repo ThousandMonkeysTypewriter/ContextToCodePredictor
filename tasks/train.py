@@ -48,11 +48,15 @@ def train_addition(epochs, command, verbose=0):
 
             # Setup Environment
             in2_, in1_, steps = data[i]
+            # print(in2_, in1_, steps)
 
             in1 = max(in2_, in1_)
             in2 = min(in2_, in1_)
 
-            scratch = ScratchPad(in1, in2, in1-in2)
+            if (command=="ADD"):
+                scratch = ScratchPad(in1, in2, in1 + in2)
+            elif (command=="REDUCE"):
+                scratch = ScratchPad(in1, in2, in1 - in2)
 
             x, y = steps[:-1], steps[1:]
             # Run through steps, and fit!
@@ -61,7 +65,7 @@ def train_addition(epochs, command, verbose=0):
             for j in range(len(x)):
                 (prog_name, prog_in_id), arg, term = x[j]
                 (_, prog_out_id), arg_out, term_out = y[j]
-                 # print(x[j], y[j], "%")
+                # print(x[j], y[j], "%")
                 # Update Environment if MOVE or WRITE
                 if prog_in_id == MOVE_PID or prog_in_id == WRITE_PID:
                     scratch.execute(prog_in_id, arg)

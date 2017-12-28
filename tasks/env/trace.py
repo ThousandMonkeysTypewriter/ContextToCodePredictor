@@ -19,18 +19,19 @@ class Trace():
         """
         self.in1, self.in2, self.debug = in1, in2, debug
 
+        self.trace = []
         # Check answer
         if command == "ADD":
             # Build Execution Trace
-            self.build_add()
             scratch = ScratchPad(in1, in2, self.in1 + self.in2)
-            self.trace, self.scratch = [], scratch
+            self.scratch = scratch
+            self.build_add()
 
         elif command == "REDUCE":
             # Build Execution Trace
-            self.build_reduce()
             scratch = ScratchPad(in1, in2, self.in1 - self.in2)
-            self.trace, self.scratch = [], scratch
+            self.scratch = scratch
+            self.build_reduce()
 
         trace_ans = int("".join(map(str, map(int, self.scratch[3]))))
 
