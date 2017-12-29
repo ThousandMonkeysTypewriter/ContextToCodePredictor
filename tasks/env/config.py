@@ -86,7 +86,11 @@ class ScratchPad():           # Addition Environment
 
     def add1(self):
         temp = self[self.in1_ptr] + self[self.in2_ptr] + self[self.carry_ptr]
-        return temp % 10, temp / 10
+        if temp > 9:
+            carry = 1
+        else:
+            carry = 0;
+        return temp % 10, carry
 
     def reduce1(self):
         temp = self[self.in1_ptr] - self[self.in2_ptr] - self[self.carry_ptr]

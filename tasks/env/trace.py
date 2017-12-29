@@ -35,7 +35,7 @@ class Trace():
 
         trace_ans = int("".join(map(str, map(int, self.scratch[3]))))
 
-        assert(scratch.true_ans == trace_ans), "%s not equals %s in %s %s %s" % (true_ans, trace_ans, in1, command, in2)
+        assert(str(scratch.true_ans) == str(trace_ans)), "%s not equals %s in %s %s %s" % (scratch.true_ans, trace_ans, in1, command, in2)
 
     def build_add(self):
         """
@@ -67,7 +67,7 @@ class Trace():
 
     def add1(self):
         # Call Add1 Subroutine
-        self.trace.append(( (REDUCE1, P[REDUCE1]), [], False ))
+        self.trace.append(( (ADD1, P[ADD1]), [], False ))
         out, carry = self.scratch.add1()
 
         # Write to Output

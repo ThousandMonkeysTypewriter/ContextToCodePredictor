@@ -3,7 +3,6 @@ npi.py
 Core model definition script for the Neural Programmer-Interpreter.
 """
 import tensorflow as tf
-from tensorflow.python.ops import array_ops
 from tensorflow.python.ops import init_ops
 import tflearn
 import numpy as np
@@ -59,7 +58,7 @@ def _linear(args, output_size, bias, W=None, b=None, W_init=None,
     if len(args) == 1:
         res = tf.matmul(args[0], W)
     else:
-        res = tf.matmul(array_ops.concat(args, 1), W)
+        res = tf.matmul(tf.concat(args, 1), W)
     if not bias:
         return W, None, res
 
@@ -127,8 +126,8 @@ class RNNCell(object):
         Returns:
             A 2D Tensor of shape [batch_size x state_size] filled with zeros.
         """
-        zeros = array_ops.zeros(
-            array_ops.pack([batch_size, self.state_size]), dtype=dtype)
+        zeros = tf.zeros(
+            tf.pack([batch_size, self.state_size]), dtype=dtype)
         zeros.set_shape([None, self.state_size])
         return zeros
 
@@ -184,7 +183,7 @@ class BasicLSTMCell(RNNCell):
 
     def __call__(self, inputs, state, scope):
         # Parameters of gates are concatenated into one multiply for efficiency.
-        c, h = array_ops.split(state, 2, 1)
+        c, h = tf.split(state, 2, 1)
         self.W, self.b, concat = _linear([inputs, h], 4 * self._num_units,
                                          self.bias, self.W, self.b,
                                          self.W_init,
@@ -193,12 +192,12 @@ class BasicLSTMCell(RNNCell):
                                          scope=scope)
 
         # i = input_gate, j = new_input, f = forget_gate, o = output_gate
-        i, j, f, o = array_ops.split(concat, 4, 1)
+        i, j, f, o = tf.split(concat, 4, 1)
 
         new_c = c * self.activation(f + self._forget_bias) + self.activation(
             i) * self.inner_activation(j)
         new_h = self.inner_activation(new_c) * self.activation(o)
-        return new_h, array_ops.concat([new_c, new_h], 1)
+        return new_h, tf.concat([new_c, new_h], 1)
 
 class NPI():
     def __init__(self, core, config, log_path, npi_core_dim=256, npi_core_layers=2, verbose=0):
@@ -331,7 +330,7 @@ class NPI():
 
         outputs = []
         states = []
-        batch_size = array_ops.shape(inputs[0])[0]
+        batch_size = tf.shape(inputs[0])[0]
         if initial_state is not None:
             state = initial_state
         else:
@@ -341,9 +340,9 @@ class NPI():
 
         if sequence_length:  # Prepare variables
             zero_output_state = (
-                array_ops.zeros(array_ops.pack([batch_size, cell.output_size]),
+                tf.zeros(tf.pack([batch_size, cell.output_size]),
                                 inputs[0].dtype),
-                array_ops.zeros(array_ops.pack([batch_size, cell.state_size]),
+                tf.zeros(tf.pack([batch_size, cell.state_size]),
                                 state.dtype))
             max_sequence_length = tf.reduce_max(sequence_length)
 
