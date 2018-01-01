@@ -64,7 +64,7 @@ def train_addition(epochs, command, verbose=0):
             for j in range(len(x)):
                 (prog_name, prog_in_id), arg, term = x[j]
                 (_, prog_out_id), arg_out, term_out = y[j]
-                 # print(x[j], y[j], "%")
+                # print(arg, "-", arg_out, "%")
                 # Update Environment if MOVE or WRITE
                 if prog_in_id == MOVE_PID or prog_in_id == WRITE_PID:
                     scratch.execute(prog_in_id, arg)
@@ -76,6 +76,7 @@ def train_addition(epochs, command, verbose=0):
                 env_in = [scratch.get_env()]
 
                 arg_in, arg_out = [get_args(arg, arg_in=True)], get_args(arg_out, arg_in=False)
+                # print(prog_out_id, "#", arg_out, "%")
                 prog_in, prog_out = [[prog_in_id]], [prog_out_id]
                 term_out = [1] if term_out else [0]
 
@@ -85,8 +86,8 @@ def train_addition(epochs, command, verbose=0):
                         [npi.arg_loss, npi.t_metric, npi.p_metric, npi.a_metrics, npi.arg_train_op],
                         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
                                    npi.y_prog: prog_out, npi.y_term: term_out,
-                                   npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]],
-                                   npi.y_args[2]: [arg_out[2]]})
+                                   npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]]})
+                                   # npi.y_args[2]: [arg_out[2]]})
                     # print({npi.prg_in: prog_in, npi.y_prog: prog_out, npi.y_term: term_out})
                     # print({npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]], npi.y_args[2]: [arg_out[2]]})
                     step_arg_loss += loss
@@ -94,7 +95,7 @@ def train_addition(epochs, command, verbose=0):
                     prog_acc += p_acc
                     arg0_acc += a_acc[0]
                     arg1_acc += a_acc[1]
-                    arg2_acc += a_acc[2]
+                    # arg2_acc += a_acc[2]
                     num_args += 1
                 else:
                     loss, t_acc, p_acc, _ = sess.run(

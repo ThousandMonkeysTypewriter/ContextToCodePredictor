@@ -18,7 +18,7 @@ CONFIG = {
     "ENVIRONMENT_COL": 10,        # 10-Digit Maximum for Addition Task
     "ENVIRONMENT_DEPTH": 10,      # Size of each element vector => One-Hot, Options: 0-9
 
-    "ARGUMENT_NUM": 3,            # Maximum Number of Program Arguments
+    "ARGUMENT_NUM": 2,            # Maximum Number of Program Arguments
     "ARGUMENT_DEPTH": 11,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
     "DEFAULT_ARG_VALUE": 10,      # Default Argument Value
 

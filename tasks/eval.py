@@ -40,10 +40,10 @@ def evaluate_addition(command):
         not_eq=0
         for x in range(0, 10):
             res = ""
-            try:
-                res = repl(sess, npi, data, command)
-            except:
-                print ("")
+            # try:
+            res = repl(sess, npi, data, command)
+            # except:
+            #     print ("")
             if res:
                eq+=1
             else:
