@@ -77,8 +77,12 @@ def repl(session, npi, data, command):
         npi.reset_state()
 
         # Setup Environment
-        if (command == "ADD"):
-            scratch = ScratchPad(x, y, x + y)
+        if command == "ADD":
+            true_ans = x + y;
+
+            if (x + y) < 800:
+                true_ans += 200
+            scratch = ScratchPad(x, y, true_ans)
         elif (command == "REDUCE"):
             scratch = ScratchPad(x, y, x - y)
 

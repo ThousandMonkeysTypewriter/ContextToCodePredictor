@@ -12,7 +12,7 @@ import numpy as np
 from tasks.env.trace import Trace
 
 
-def generate_addition(prefix, num_examples, command, debug=False, maximum=10000000000, debug_every=1000):
+def generate_addition(prefix, num_examples, command, debug, maximum, debug_every=1000):
     """
     Generates addition data with the given string prefix (i.e. 'train', 'test') and the specified
     number of examples.
@@ -22,7 +22,7 @@ def generate_addition(prefix, num_examples, command, debug=False, maximum=100000
     """
     data = []
     for i in range(num_examples):
-        in1 = np.random.randint(maximum - 1)
+        in1 = np.random.randint(maximum/10, maximum - 1)
         in2 = np.random.randint(maximum - in1)
 
         mn = min (in1, in2)

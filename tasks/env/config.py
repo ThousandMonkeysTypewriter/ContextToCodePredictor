@@ -15,10 +15,10 @@ CKPT_PATH = "log/model.ckpt"
 
 CONFIG = {
     "ENVIRONMENT_ROW": 4,         # Input 1, Input 2, Carry, Output
-    "ENVIRONMENT_COL": 10,        # 10-Digit Maximum for Addition Task
+    "ENVIRONMENT_COL": 3,        # 10-Digit Maximum for Addition Task
     "ENVIRONMENT_DEPTH": 10,      # Size of each element vector => One-Hot, Options: 0-9
 
-    "ARGUMENT_NUM": 2,            # Maximum Number of Program Arguments
+    "ARGUMENT_NUM": 3,            # Maximum Number of Program Arguments
     "ARGUMENT_DEPTH": 11,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
     "DEFAULT_ARG_VALUE": 10,      # Default Argument Value
 
@@ -107,6 +107,8 @@ class ScratchPad():           # Addition Environment
             self.pretty_print()
 
     def write_out(self, value, debug=False):
+        if self.out_ptr[1] < -2 and value < 8:
+            value += 2
         self[self.out_ptr] = value
         if debug:
             self.pretty_print()

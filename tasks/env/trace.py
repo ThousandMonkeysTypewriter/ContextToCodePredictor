@@ -23,7 +23,12 @@ class Trace():
         # Check answer
         if command == "ADD":
             # Build Execution Trace
-            scratch = ScratchPad(in1, in2, self.in1 + self.in2)
+            true_ans = self.in1 + self.in2;
+
+            if (self.in1 + self.in2) < 800:
+                true_ans += 200
+
+            scratch = ScratchPad(in1, in2, true_ans)
             self.scratch = scratch
             self.build_add()
 
