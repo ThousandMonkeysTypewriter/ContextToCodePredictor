@@ -6,11 +6,13 @@ then steps through an execution trace, computing the exact order of subroutines 
 called.
 """
 import pickle
-
+import pandas as pd
 import numpy as np
 
-from tasks.env.trace import Trace
-
+from dsl.trace import Trace
+import datetime
+import tensorflow as tf
+import re
 
 def generate_addition(prefix, num_examples, command, debug, maximum, debug_every=1000):
     """
@@ -20,18 +22,24 @@ def generate_addition(prefix, num_examples, command, debug, maximum, debug_every
     :param prefix: String prefix for saving the file ('train', 'test')
     :param num_examples: Number of examples to generate.
     """
+    times = pd.date_range('2009-10-01', end='2017-12-31', freq='5min').tolist()
+
     data = []
-    for i in range(num_examples):
-        in1 = np.random.randint(maximum/10, maximum - 1)
-        in2 = np.random.randint(maximum - in1)
+    origs = []
+    formats = []
+    members = set()
+    for i in np.random.choice(times, size=num_examples, replace=False):
+        origs.append(i)
+        formats.append(i.strftime("%H:%M:%S %A, %d %B %Y"))
 
-        mn = min (in1, in2)
-        mx = max(in1, in2)
-
-        if debug and i % debug_every == 0:
-            trace = Trace(mx, mn, command, True).trace
-        else:
-            trace = Trace(mx, mn, command).trace
-        data.append(( mn, mx, trace ))
+        for m in i.strftime("%H:%M:%S %A, %d %B %Y").replace(':', ' ').replace(',', ' ').split(' '):
+            members.add(m)
+        print(members)
+        # if debug and i % debug_every == 0:
+        #     trace = Trace(orig, formed, command, True).trace
+        # else:
+        #     trace = Trace(orig, formed, command).trace
+    # data.append(( orig, formed, trace ))
+    print(data)
     with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:
         pickle.dump(data, f)

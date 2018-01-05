@@ -107,8 +107,6 @@ class ScratchPad():           # Addition Environment
             self.pretty_print()
 
     def write_out(self, value, debug=False):
-        if self.out_ptr[1] < -2 and value < 8:
-            value += 2
         self[self.out_ptr] = value
         if debug:
             self.pretty_print()

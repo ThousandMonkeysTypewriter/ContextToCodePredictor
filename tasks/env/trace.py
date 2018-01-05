@@ -75,6 +75,8 @@ class Trace():
         self.trace.append(( (ADD1, P[ADD1]), [], False ))
         out, carry = self.scratch.add1()
 
+        if self.scratch.out_ptr[1] < -2 and out < 8:
+            out += 2
         # Write to Output
         self.trace.append(( (WRITE, P[WRITE]), [WRITE_OUT, out], False ))
         self.scratch.write_out(out, self.debug)

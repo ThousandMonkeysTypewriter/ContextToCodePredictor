@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorflow.python.ops import init_ops
 import tflearn
 import numpy as np
+from tasks.env.config import get_incoming_shape
 
 def _linear(args, output_size, bias, W=None, b=None, W_init=None,
            bias_start=0.0, trainable=True, restore=True, scope=None):
@@ -264,15 +265,6 @@ class NPI():
         """
         zero_state = tf.zeros([self.bsz, 2 * self.npi_core_dim])
         self.h_states = [zero_state for _ in range(self.npi_core_layers)]
-
-    def get_incoming_shape(self, incoming):
-        """ Returns the incoming data shape """
-        if isinstance(incoming, tf.Tensor):
-            return incoming.get_shape().as_list()
-        elif type(incoming) in [np.array, list, tuple]:
-            return np.shape(incoming)
-        else:
-            raise Exception("Invalid incoming layer.")
 
     def _rnn(self, cell, inputs, initial_state, dtype, sequence_length,
              scope_):
