@@ -55,12 +55,11 @@ def generate_addition(prefix, num_examples, command, debug, maximum, debug_every
         for v in explode(value):
             value_list.append(members_list.index(v))
 
-        print(value_list, key_list, value, key)
         if debug and count % debug_every == 0:
             trace = Trace(key_list, value_list, command, True).trace
         else:
             trace = Trace(key_list, value_list, command).trace
-    data.append(( orig, formed, trace ))
+        data.append(( key, value, trace ))
 
     with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:
         pickle.dump(data, f)

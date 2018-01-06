@@ -5,8 +5,6 @@ Configuration Variables for the Addition NPI Task => Stores Scratch-Pad Dimensio
 Embedding Information, etc.
 """
 import numpy as np
-import sys
-import time
 import tensorflow as tf
 
 DATA_PATH = "tasks/env/data/train.pik"
@@ -30,8 +28,8 @@ CONFIG = {
 PROGRAM_SET = [
     ("MOVE_PTR", 4, 2),       # Moves Pointer (4 options) either left or right (2 options)
     ("WRITE", 2, 10),         # Given Carry/Out Pointer (2 options) writes digit (10 options)
-    ("ADD",),                 # Top-Level Add Program (calls children routines)
-    ("ADD1",),                # Single-Digit (Column) Add Operation
+    ("TRANSFORM",),                 # Top-Level Add Program (calls children routines)
+    ("TRANS1",),                # Single-Digit (Column) Add Operation
     ("REDUCE",),              # Top-Level Add Program (calls children routines)
     ("REDUCE1",),             # Single-Digit (Column) Add Operation
     ("CARRY",),               # Carry Operation

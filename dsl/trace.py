@@ -7,7 +7,7 @@ trace, calling the specified subprograms.
 from tasks.env.config import PROGRAM_ID as P
 from dsl.dsl import ScratchPad
 ADD, ADD1, WRITE, LSHIFT, CARRY, MOVE_PTR, REDUCE, REDUCE1 = "ADD", "ADD1", "WRITE", "LSHIFT", "CARRY", "MOVE_PTR", "REDUCE", "REDUCE1"
-WRITE_OUT, WRITE_CARRY = 0, 1
+WRITE_OUT = 0
 IN1_PTR, IN2_PTR, CARRY_PTR, OUT_PTR = range(4)
 LEFT, RIGHT = 0, 1
 
@@ -28,52 +28,35 @@ class Trace():
         self.scratch = scratch
         self.transform()
 
-        trace_ans = int("".join(map(str, map(int, self.scratch[3]))))
+        trace_ans = []
+        for i in self.scratch[2]:
+            trace_ans.insert(0, i)
 
-        assert(str(scratch.true_ans) == str(trace_ans)), "%s not equals %s in %s %s %s" % (scratch.true_ans, trace_ans, in1, command, in2)
+        assert(str(scratch.true_ans) == str(trace_ans)), "%s not equals %s in %s %s" % (scratch.true_ans, trace_ans, orig, formatted)
 
-    def build_add(self):
+
+    def transform(self):
         """
         Builds execution trace, adding individual steps to the instance variable trace. Each
         step is represented by a triple (program_id : Integer, args : List, terminate: Boolean). If
         a subroutine doesn't take arguments, the empty list is returned.
         """
         # Seed with the starting subroutine call
-        self.trace.append(((ADD, P[ADD]), [], False))
+        self.trace.append((("TRANSFORM", P["TRANSFORM"]), [], False))
 
         # Execute Trace
         while not self.scratch.done():
-            self.add1()
+            self.trans1()
             self.lshift()
 
-    def build_reduce(self):
-        """
-        Builds execution trace, adding individual steps to the instance variable trace. Each
-        step is represented by a triple (program_id : Integer, args : List, terminate: Boolean). If
-        a subroutine doesn't take arguments, the empty list is returned.
-        """
-        # Seed with the starting subroutine call
-        self.trace.append(((REDUCE, P[REDUCE]), [], False))
-
-        # Execute Trace
-        while not self.scratch.done():
-            self.reduce1()
-            self.lshift()
-
-    def add1(self):
+    def trans1(self):
         # Call Add1 Subroutine
-        self.trace.append(( (ADD1, P[ADD1]), [], False ))
-        out, carry = self.scratch.add1()
+        self.trace.append(( ("TRANS1", P["TRANS1"]), [], False ))
+        out = self.scratch.trans1()
 
-        if self.scratch.out_ptr[1] < -2 and out < 8:
-            out += 2
         # Write to Output
-        self.trace.append(( (WRITE, P[WRITE]), [WRITE_OUT, out], False ))
+        self.trace.append(( ("WRITE", P["WRITE"]), [0, out], False ))
         self.scratch.write_out(out, self.debug)
-
-        # Carry Condition
-        if carry > 0:
-            self.carry(carry)
 
     def reduce1(self):
         # Call Add1 Subroutine
@@ -110,12 +93,6 @@ class Trace():
 
         # Move Inp1 Pointer Left
         self.trace.append(( (MOVE_PTR, P[MOVE_PTR]), [IN1_PTR, LEFT], False ))
-
-        # Move Inp1 Pointer Left
-        self.trace.append(( (MOVE_PTR, P[MOVE_PTR]), [IN2_PTR, LEFT], False ))
-
-        # Move Inp1 Pointer Left
-        self.trace.append(( (MOVE_PTR, P[MOVE_PTR]), [CARRY_PTR, LEFT], False ))
 
         # Move Inp1 Pointer Left (check if done)
         if self.scratch.done():

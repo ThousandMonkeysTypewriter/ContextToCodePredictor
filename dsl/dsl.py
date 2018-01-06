@@ -1,6 +1,9 @@
 
 from tasks.env.config import CONFIG
 import numpy as np
+import time
+import sys
+
 
 class ScratchPad():           # Addition Environment
     def __init__(self, start, finish, true_ans_, rows=CONFIG["ENVIRONMENT_ROW"], cols=CONFIG["ENVIRONMENT_COL"]):
@@ -13,8 +16,8 @@ class ScratchPad():           # Addition Environment
         self.init_scratchpad(start, finish)
 
         # Pointers initially all start at the right
-        self.in1_ptr, self.in2_ptr, self.carry_ptr, self.out_ptr = self.ptrs = \
-            [(x, -1) for x in range(4)]
+        self.in1_ptr, self.in2_ptr, self.out_ptr = self.ptrs = \
+            [(x, -1) for x in range(3)]
 
         # self.out_ptr = [(x, -1) for x in range(4)]
 
@@ -39,13 +42,9 @@ class ScratchPad():           # Addition Environment
             else:
                 return False
 
-    def add1(self):
-        temp = self[self.in1_ptr] + self[self.in2_ptr] + self[self.carry_ptr]
-        if temp > 9:
-            carry = 1
-        else:
-            carry = 0;
-        return temp % 10, carry
+    def trans1(self):
+        temp = self[self.in2_ptr]
+        return temp
 
     def reduce1(self):
         temp = self[self.in1_ptr] - self[self.in2_ptr] - self[self.carry_ptr]
@@ -67,7 +66,7 @@ class ScratchPad():           # Addition Environment
             self.pretty_print()
 
     def lshift(self):
-        self.in1_ptr, self.in2_ptr, self.carry_ptr, self.out_ptr = self.ptrs = \
+        self.in1_ptr, self.in2_ptr, self.out_ptr = self.ptrs = \
             [(x, y - 1) for (x, y) in self.ptrs]
 
     def pretty_print(self):
