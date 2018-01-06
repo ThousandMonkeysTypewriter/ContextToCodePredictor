@@ -14,6 +14,9 @@ import datetime
 import tensorflow as tf
 import re
 
+def explode (str):
+    return str.replace(':', ' ').replace(', ', ' ').replace('-', ' ').split(' ')
+
 def generate_addition(prefix, num_examples, command, debug, maximum, debug_every=1000):
     """
     Generates addition data with the given string prefix (i.e. 'train', 'test') and the specified
@@ -25,21 +28,39 @@ def generate_addition(prefix, num_examples, command, debug, maximum, debug_every
     times = pd.date_range('2009-10-01', end='2017-12-31', freq='5min').tolist()
 
     data = []
-    origs = []
-    formats = []
-    members = set()
+    dates = {}
+    members_set = set()
     for i in np.random.choice(times, size=num_examples, replace=False):
-        origs.append(i)
-        formats.append(i.strftime("%H:%M:%S %A, %d %B %Y"))
+        # key = i.strftime("%Y-%m-%d %H:%M:%S")
+        # value = i.strftime("%H:%M:%S %A, %d %B %Y")
 
-        for m in i.strftime("%H:%M:%S %A, %d %B %Y").replace(':', ' ').replace(',', ' ').split(' '):
-            members.add(m)
-        print(members)
-        # if debug and i % debug_every == 0:
-        #     trace = Trace(orig, formed, command, True).trace
-        # else:
-        #     trace = Trace(orig, formed, command).trace
-    # data.append(( orig, formed, trace ))
-    print(data)
+        key = i.strftime("%Y %m %d")
+        value = i.strftime("%d %B %Y")
+
+        dates[key] = value
+
+        for m in explode(value):
+            members_set.add(m)
+        for m in explode(key):
+            members_set.add(m)
+    members_list = list(members_set)
+    count = 0
+    for key, value in dates.items():
+        count += 1
+        key_list = []
+        value_list = []
+        for k in explode(key):
+            key_list.append(members_list.index(k))
+
+        for v in explode(value):
+            value_list.append(members_list.index(v))
+
+        print(value_list, key_list, value, key)
+        if debug and count % debug_every == 0:
+            trace = Trace(key_list, value_list, command, True).trace
+        else:
+            trace = Trace(key_list, value_list, command).trace
+    data.append(( orig, formed, trace ))
+
     with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:
         pickle.dump(data, f)

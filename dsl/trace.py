@@ -4,7 +4,8 @@ trace.py
 Core class definition for a trace object => given a pair of integers to add, builds the execution
 trace, calling the specified subprograms.
 """
-from tasks.env.config import ScratchPad, PROGRAM_ID as P
+from tasks.env.config import PROGRAM_ID as P
+from dsl.dsl import ScratchPad
 ADD, ADD1, WRITE, LSHIFT, CARRY, MOVE_PTR, REDUCE, REDUCE1 = "ADD", "ADD1", "WRITE", "LSHIFT", "CARRY", "MOVE_PTR", "REDUCE", "REDUCE1"
 WRITE_OUT, WRITE_CARRY = 0, 1
 IN1_PTR, IN2_PTR, CARRY_PTR, OUT_PTR = range(4)
@@ -21,22 +22,11 @@ class Trace():
 
         self.trace = []
         # Check answer
-        if command == "ADD":
-            # Build Execution Trace
-            true_ans = self.in1 + self.in2;
-
-            if (self.in1 + self.in2) < 800:
-                true_ans += 200
-
-            scratch = ScratchPad(in1, in2, true_ans)
-            self.scratch = scratch
-            self.build_add()
-
-        elif command == "REDUCE":
-            # Build Execution Trace
-            scratch = ScratchPad(in1, in2, self.in1 - self.in2)
-            self.scratch = scratch
-            self.build_reduce()
+        true_ans = formatted;
+        # Build Execution Trace
+        scratch = ScratchPad(orig, formatted, true_ans)
+        self.scratch = scratch
+        self.transform()
 
         trace_ans = int("".join(map(str, map(int, self.scratch[3]))))
 

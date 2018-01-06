@@ -5,7 +5,8 @@ Loads in an Addition NPI, and starts a REPL for interactive addition.
 """
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
-from tasks.env.config import CONFIG, get_args, PROGRAM_SET, ScratchPad, LOG_PATH, DATA_PATH, CKPT_PATH
+from tasks.env.config import CONFIG, get_args, PROGRAM_SET, LOG_PATH, DATA_PATH, CKPT_PATH
+import dsl.dsl
 import numpy as np
 import pickle
 import tensorflow as tf
