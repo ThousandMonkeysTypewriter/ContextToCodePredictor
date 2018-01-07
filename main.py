@@ -31,14 +31,13 @@ def main(_):
             maximum *= 10
 
         # REDUCE
-        command = "ADD"
         if FLAGS.generate:
-            generate_addition('train', FLAGS.num_training, command, True, maximum)
-            generate_addition('test', FLAGS.num_test, command, True, maximum)
+            generate_addition('train', FLAGS.num_training, True, maximum)
+            generate_addition('test', FLAGS.num_test, True, maximum)
 
         # Train Model (if necessary)
         if FLAGS.do_train:
-            train_addition(FLAGS.num_epochs, command)
+            train_addition(FLAGS.num_epochs)
 
         # Evaluate Model
         if FLAGS.do_eval:

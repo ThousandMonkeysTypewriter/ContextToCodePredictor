@@ -403,7 +403,7 @@ class NPI():
             (http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf)
 
         """
-        input_shape = self.get_incoming_shape(incoming)
+        input_shape = get_incoming_shape(incoming)
         W_init = weights_init
         if isinstance(weights_init, str):
             W_init = tflearn.initializations.get(weights_init)()

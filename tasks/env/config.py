@@ -12,15 +12,15 @@ LOG_PATH = "log/"
 CKPT_PATH = "log/model.ckpt"
 
 CONFIG = {
-    "ENVIRONMENT_ROW": 4,         # Input 1, Input 2, Carry, Output
+    "ENVIRONMENT_ROW": 3,         # Input 1, Input 2, Carry, Output
     "ENVIRONMENT_COL": 3,        # 10-Digit Maximum for Addition Task
-    "ENVIRONMENT_DEPTH": 10,      # Size of each element vector => One-Hot, Options: 0-9
+    "ENVIRONMENT_DEPTH": 74,      # Size of each element vector => One-Hot, Options: 0-9
 
     "ARGUMENT_NUM": 3,            # Maximum Number of Program Arguments
-    "ARGUMENT_DEPTH": 11,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
-    "DEFAULT_ARG_VALUE": 10,      # Default Argument Value
+    "ARGUMENT_DEPTH": 75,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
+    "DEFAULT_ARG_VALUE": 74,      # Default Argument Value
 
-    "PROGRAM_NUM": 8,             # Maximum Number of Subroutines
+    "PROGRAM_NUM": 5,             # Maximum Number of Subroutines
     "PROGRAM_KEY_SIZE": 5,        # Size of the Program Keys
     "PROGRAM_EMBEDDING_SIZE": 10  # Size of the Program Embeddings
 }
@@ -30,9 +30,6 @@ PROGRAM_SET = [
     ("WRITE", 2, 10),         # Given Carry/Out Pointer (2 options) writes digit (10 options)
     ("TRANSFORM",),                 # Top-Level Add Program (calls children routines)
     ("TRANS1",),                # Single-Digit (Column) Add Operation
-    ("REDUCE",),              # Top-Level Add Program (calls children routines)
-    ("REDUCE1",),             # Single-Digit (Column) Add Operation
-    ("CARRY",),               # Carry Operation
     ("LSHIFT",)               # Shifts all Pointers Left (after Single-Digit Add)
 ]
 

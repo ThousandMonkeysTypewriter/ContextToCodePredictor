@@ -13,7 +13,7 @@ LEFT, RIGHT = 0, 1
 
 
 class Trace():
-    def __init__(self, orig, formatted, command, debug=False):
+    def __init__(self, orig, formatted, debug=False):
         """
         Instantiates a trace object, and builds the exact execution pipeline for adding the given
         parameters.
@@ -31,6 +31,7 @@ class Trace():
         trace_ans = []
         for i in self.scratch[2]:
             trace_ans.insert(0, i)
+
 
         assert(str(scratch.true_ans) == str(trace_ans)), "%s not equals %s in %s %s" % (scratch.true_ans, trace_ans, orig, formatted)
 
@@ -51,12 +52,12 @@ class Trace():
 
     def trans1(self):
         # Call Add1 Subroutine
-        self.trace.append(( ("TRANS1", P["TRANS1"]), [], False ))
-        out = self.scratch.trans1()
+        out_, in_ = self.scratch.trans1()
+        self.trace.append(( ("TRANS1", P["TRANS1"]), [in_, out_], False ))
 
         # Write to Output
-        self.trace.append(( ("WRITE", P["WRITE"]), [0, out], False ))
-        self.scratch.write_out(out, self.debug)
+        self.trace.append(( ("WRITE", P["WRITE"]), [0, out_], False ))
+        self.scratch.write_out(out_, self.debug)
 
     def reduce1(self):
         # Call Add1 Subroutine

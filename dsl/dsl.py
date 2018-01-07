@@ -34,17 +34,21 @@ class ScratchPad():           # Addition Environment
 
     def done(self):
         if self.in1_ptr[1] < -self.cols:
+            # print ("$")
             return True
         else:
             lst = [x[1] for x in self.ptrs]
             if len(set(lst)) == 1:
+                # print ("$$")
                 return sum(sum([self[x[0], :min(x[1] + 1, -1)] for x in self.ptrs])) == 0
             else:
+                # print ("$$$")
                 return False
 
     def trans1(self):
-        temp = self[self.in2_ptr]
-        return temp
+        out_ = self[self.in2_ptr]
+        in_ = self[self.in1_ptr]
+        return out_, in_
 
     def reduce1(self):
         temp = self[self.in1_ptr] - self[self.in2_ptr] - self[self.carry_ptr]
@@ -70,13 +74,12 @@ class ScratchPad():           # Addition Environment
             [(x, y - 1) for (x, y) in self.ptrs]
 
     def pretty_print(self):
-        new_strs = ["".join(map(str, self[i])) for i in range(4)]
+        new_strs = ["".join(map(str, self[i])) for i in range(3)]
         line_length = len('Input 1:' + " " * 5 + new_strs[0])
         print ('Input 1:' + " " * 5 + new_strs[0])
         print ('Input 2:' + " " * 5 + new_strs[1])
-        print ('Carry  :' + " " * 5 + new_strs[2])
         print ('-' * line_length)
-        print ('Output :' + " " * 5 + new_strs[3])
+        print ('Output :' + " " * 5 + new_strs[2])
         print ('True out:' + " " * 5 + str(self.true_ans))
         print ('')
         time.sleep(.1)
@@ -92,14 +95,10 @@ class ScratchPad():           # Addition Environment
             env[1][0] = 1
         else:
             env[1][self[self.in2_ptr]] = 1
-        if self.carry_ptr[1] < -CONFIG["ENVIRONMENT_COL"]:
+        if self.out_ptr[1] < -CONFIG["ENVIRONMENT_COL"]:
             env[2][0] = 1
         else:
-            env[2][self[self.carry_ptr]] = 1
-        if self.out_ptr[1] < -CONFIG["ENVIRONMENT_COL"]:
-            env[3][0] = 1
-        else:
-            env[3][self[self.out_ptr]] = 1
+            env[2][self[self.out_ptr]] = 1
         return env.flatten()
 
     def execute(self, prog_id, args):
@@ -117,7 +116,7 @@ class ScratchPad():           # Addition Environment
                 self.out_ptr = (self.out_ptr[0], self.out_ptr[1] + lr)
             else:
                 raise NotImplementedError
-            self.ptrs = [self.in1_ptr, self.in2_ptr, self.carry_ptr, self.out_ptr]
+            self.ptrs = [self.in1_ptr, self.in2_ptr, self.out_ptr]
         elif prog_id == 1:             # WRITE!
             ptr, val = args
             if ptr == 0:

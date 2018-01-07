@@ -6,6 +6,7 @@ the precomputed data.
 """
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
+from dsl.dsl import ScratchPad
 from tasks.env.config import CONFIG, get_args, LOG_PATH, DATA_PATH, CKPT_PATH
 import dsl.dsl
 import pickle
@@ -14,11 +15,11 @@ import numpy as np
 
 
 MOVE_PID, WRITE_PID = 0, 1
-WRITE_OUT, WRITE_CARRY = 0, 1
-IN1_PTR, IN2_PTR, CARRY_PTR, OUT_PTR = range(4)
+WRITE_OUT = 0
+IN1_PTR, IN2_PTR, OUT_PTR = range(3)
 LEFT, RIGHT = 0, 1
 
-def train_addition(epochs, command, verbose=0):
+def train_addition(epochs, verbose=0):
     """
     Instantiates an Addition Core, NPI, then loads and fits model to data.
 
@@ -45,20 +46,15 @@ def train_addition(epochs, command, verbose=0):
 
     # Start Training
     for ep in range(1, epochs + 1):
+        print(len(data))
         for i in range(len(data)):
             # Reset NPI States
             npi.reset_state()
 
             # Setup Environment
-            in2_, in1_, steps = data[i]
+            in1, in2, steps = data[i]
 
-            in1 = max(in2_, in1_)
-            in2 = min(in2_, in1_)
-
-            if (command=="ADD"):
-                scratch = ScratchPad(in1, in2, in1 + in2)
-            elif (command=="REDUCE"):
-                scratch = ScratchPad(in1, in2, in1 - in2)
+            scratch = ScratchPad(in1, in2, in2)
 
             x, y = steps[:-1], steps[1:]
             # Run through steps, and fit!
@@ -86,13 +82,13 @@ def train_addition(epochs, command, verbose=0):
                 prog_out_vec[CONFIG["DEFAULT_ARG_VALUE"]] = 1
 
                 # Fit!
-                if prog_out_id == MOVE_PID or prog_out_id == WRITE_PID:
+                if True:
                     loss, t_acc, p_acc, a_acc, _ = sess.run(
                         [npi.arg_loss, npi.t_metric, npi.p_metric, npi.a_metrics, npi.arg_train_op],
                         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
                                    npi.y_prog: prog_out, npi.y_term: term_out,
                                    npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]],
-                                   npi.y_args[2]: [prog_out_vec]})
+                                   npi.y_args[2]: [arg_out[2]]})
                     # print({npi.prg_in: prog_in, npi.y_prog: prog_out, npi.y_term: term_out})
                     # print({npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]], npi.y_args[2]: [arg_out[2]]})
                     step_arg_loss += loss
@@ -102,14 +98,14 @@ def train_addition(epochs, command, verbose=0):
                     arg1_acc += a_acc[1]
                     arg2_acc += a_acc[2]
                     num_args += 1
-                else:
-                    loss, t_acc, p_acc, _ = sess.run(
-                        [npi.default_loss, npi.t_metric, npi.p_metric, npi.default_train_op],
-                        feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
-                                   npi.y_prog: prog_out, npi.y_term: term_out})
-                    step_def_loss += loss
-                    term_acc += t_acc
-                    prog_acc += p_acc
+                # else:
+                #     loss, t_acc, p_acc, _ = sess.run(
+                #         [npi.default_loss, npi.t_metric, npi.p_metric, npi.default_train_op],
+                #         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
+                #                    npi.y_prog: prog_out, npi.y_term: term_out})
+                #     step_def_loss += loss
+                #     term_acc += t_acc
+                #     prog_acc += p_acc
 
             print ("Epoch {0:02d} Step {1:03d} Default Step Loss {2:05f}, " \
                   "Argument Step Loss {3:05f}, Term: {4:03f}, Prog: {5:03f}, A0: {6:03f}, " \

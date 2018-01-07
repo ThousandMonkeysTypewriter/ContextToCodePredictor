@@ -17,7 +17,7 @@ import re
 def explode (str):
     return str.replace(':', ' ').replace(', ', ' ').replace('-', ' ').split(' ')
 
-def generate_addition(prefix, num_examples, command, debug, maximum, debug_every=1000):
+def generate_addition(prefix, num_examples, debug, maximum, debug_every=1000):
     """
     Generates addition data with the given string prefix (i.e. 'train', 'test') and the specified
     number of examples.
@@ -25,19 +25,22 @@ def generate_addition(prefix, num_examples, command, debug, maximum, debug_every
     :param prefix: String prefix for saving the file ('train', 'test')
     :param num_examples: Number of examples to generate.
     """
-    times = pd.date_range('2009-10-01', end='2017-12-31', freq='5min').tolist()
+    times = pd.date_range('2000-10-01', end='2017-12-31', freq='5min').tolist()
 
     data = []
-    dates = {}
+    dates = []
     members_set = set()
     for i in np.random.choice(times, size=num_examples, replace=False):
         # key = i.strftime("%Y-%m-%d %H:%M:%S")
         # value = i.strftime("%H:%M:%S %A, %d %B %Y")
 
-        key = i.strftime("%Y %m %d")
-        value = i.strftime("%d %B %Y")
+        key = i.strftime("y%Y m%m d%d")
+        value = i.strftime("d%d m%B y%Y")
 
-        dates[key] = value
+        # key = i.strftime("m%m 0 0")
+        # value = i.strftime("m%B 0 0")
+
+        dates.append({"k":key, "v":value})
 
         for m in explode(value):
             members_set.add(m)
@@ -45,21 +48,22 @@ def generate_addition(prefix, num_examples, command, debug, maximum, debug_every
             members_set.add(m)
     members_list = list(members_set)
     count = 0
-    for key, value in dates.items():
+    for d in dates:
         count += 1
         key_list = []
         value_list = []
-        for k in explode(key):
+        for k in explode(d["k"]):
             key_list.append(members_list.index(k))
 
-        for v in explode(value):
+        for v in explode(d["v"]):
             value_list.append(members_list.index(v))
 
         if debug and count % debug_every == 0:
-            trace = Trace(key_list, value_list, command, True).trace
+            trace = Trace(key_list, value_list, True).trace
         else:
-            trace = Trace(key_list, value_list, command).trace
-        data.append(( key, value, trace ))
-
+            trace = Trace(key_list, value_list).trace
+        print(d)
+        data.append(( key_list, value_list, trace ))
+    print(len(members_list))
     with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:
         pickle.dump(data, f)
