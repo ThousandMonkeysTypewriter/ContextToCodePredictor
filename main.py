@@ -41,7 +41,7 @@ def main(_):
 
         # Evaluate Model
         if FLAGS.do_eval:
-            evaluate_addition(command)
+            evaluate_addition()
 
 
 if __name__ == "__main__":

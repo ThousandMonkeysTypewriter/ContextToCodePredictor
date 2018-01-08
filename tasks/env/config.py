@@ -13,7 +13,7 @@ CKPT_PATH = "log/model.ckpt"
 
 CONFIG = {
     "ENVIRONMENT_ROW": 3,         # Input 1, Input 2, Carry, Output
-    "ENVIRONMENT_COL": 3,        # 10-Digit Maximum for Addition Task
+    "ENVIRONMENT_COL": 3,         # 10-Digit Maximum for Addition Task
     "ENVIRONMENT_DEPTH": 74,      # Size of each element vector => One-Hot, Options: 0-9
 
     "ARGUMENT_NUM": 3,            # Maximum Number of Program Arguments
@@ -28,8 +28,8 @@ CONFIG = {
 PROGRAM_SET = [
     ("MOVE_PTR", 4, 2),       # Moves Pointer (4 options) either left or right (2 options)
     ("WRITE", 2, 10),         # Given Carry/Out Pointer (2 options) writes digit (10 options)
-    ("TRANSFORM",),                 # Top-Level Add Program (calls children routines)
-    ("TRANS1",),                # Single-Digit (Column) Add Operation
+    ("TRANSFORM",),           # Top-Level Add Program (calls children routines)
+    ("TRANS1",),              # Single-Digit (Column) Add Operation
     ("LSHIFT",)               # Shifts all Pointers Left (after Single-Digit Add)
 ]
 

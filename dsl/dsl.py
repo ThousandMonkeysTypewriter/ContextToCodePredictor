@@ -50,20 +50,6 @@ class ScratchPad():           # Addition Environment
         in_ = self[self.in1_ptr]
         return out_, in_
 
-    def reduce1(self):
-        temp = self[self.in1_ptr] - self[self.in2_ptr] - self[self.carry_ptr]
-        if temp < 0:
-            carry = 1
-        else:
-            carry = 0;
-        return temp % 10, carry
-
-    def write_carry(self, carry_val, debug=False):
-        carry_row, carry_col = self.carry_ptr
-        self[(carry_row, carry_col - 1)] = carry_val
-        if debug:
-            self.pretty_print()
-
     def write_out(self, value, debug=False):
         self[self.out_ptr] = value
         if debug:
@@ -110,8 +96,6 @@ class ScratchPad():           # Addition Environment
                 self.in1_ptr = (self.in1_ptr[0], self.in1_ptr[1] + lr)
             elif ptr == 1:
                 self.in2_ptr = (self.in2_ptr[0], self.in2_ptr[1] + lr)
-            elif ptr == 2:
-                self.carry_ptr = (self.carry_ptr[0], self.carry_ptr[1] + lr)
             elif ptr == 3:
                 self.out_ptr = (self.out_ptr[0], self.out_ptr[1] + lr)
             else:
