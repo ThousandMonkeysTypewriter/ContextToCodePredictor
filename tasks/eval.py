@@ -69,7 +69,8 @@ def repl(session, npi, data, command):
             myfile.write(str(x)+","+str(y) + "\n")
 
         with open("log/prog_orig.txt", "a") as myfile:
-            myfile.write(str(steps))
+            for s in steps:
+                myfile.write(str(s)+"\n")
 
         # Reset NPI States
         print ("")

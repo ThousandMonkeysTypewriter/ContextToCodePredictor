@@ -59,35 +59,6 @@ class Trace():
         self.trace.append(( ("WRITE", P["WRITE"]), [0, out_], False ))
         self.scratch.write_out(out_, self.debug)
 
-    def reduce1(self):
-        # Call Add1 Subroutine
-        self.trace.append(( (REDUCE1, P[REDUCE1]), [], False ))
-        out, carry = self.scratch.reduce1()
-
-        # Write to Output
-        self.trace.append(( (WRITE, P[WRITE]), [WRITE_OUT, out], False ))
-        self.scratch.write_out(out, self.debug)
-
-        # Carry Condition
-        if carry > 0:
-            self.carry(carry)
-
-    def carry(self, carry_val):
-        # Call Carry Subroutine
-        self.trace.append(( (CARRY, P[CARRY]), [], False ))
-
-        # Shift Carry Pointer Left
-        self.trace.append(( (MOVE_PTR, P[MOVE_PTR]), [CARRY_PTR, LEFT], False ))
-
-        # Write Carry Value
-        self.trace.append(( (WRITE, P[WRITE]), [WRITE_CARRY, carry_val], False ))
-
-        # Shift Carry Pointer Right
-        self.trace.append(( (MOVE_PTR, P[MOVE_PTR]), [CARRY_PTR, RIGHT], False ))
-
-        # Perform Carry Logic on Scratchpad
-        self.scratch.write_carry(carry_val, self.debug)
-
     def lshift(self):
         # Perform LShift Logic on Scratchpad
         self.scratch.lshift()
