@@ -54,18 +54,22 @@ def evaluate_addition():
         # repeat()
 
 def repl(session, npi, data, command):
-        x, y, steps = data[1]
-
-        print(data[1])
+        x, y, steps = data[3]
 
         f = open('log/numbers.txt', 'r+')
         f.truncate()
 
-        f = open('log/prog.txt', 'r+')
+        f = open('log/prog_orig.txt', 'r+')
+        f.truncate()
+
+        f = open('log/prog_produced.txt', 'r+')
         f.truncate()
 
         with open("log/numbers.txt", "a") as myfile:
             myfile.write(str(x)+","+str(y) + "\n")
+
+        with open("log/prog_orig.txt", "a") as myfile:
+            myfile.write(str(steps))
 
         # Reset NPI States
         print ("")
@@ -129,9 +133,11 @@ def repl(session, npi, data, command):
                 #     scratch.execute(prog_id, arg)
 
                 trace_ans = []
-                for i in self.scratch[2]:
+                for i in scratch[2]:
                     trace_ans.insert(0, i)
-                print ("Input:  %s, %s, Output:  %s, %s" % (str(x), str(y), str(output), scratch.true_ans))
+                # print ("Input:  %s, %s, Output:  %s, %s" % (str(x), str(y), str(output), scratch.true_ans))
+                with open("log/prog_produced.txt", "a") as myfile:
+                    myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + ", terminate: true\n")
                 return True
 
             else:
@@ -139,8 +145,8 @@ def repl(session, npi, data, command):
                 prog_name = PROGRAM_SET[prog_id][0]
                 term = False
                 print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
-                with open("log/prog.txt", "a") as myfile:
-                    myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + "\n")
+                with open("log/prog_produced.txt", "a") as myfile:
+                    myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + ","+str(np.argmax(t))+"\n")
 
             # cont = raw_input('Continue? ')
 
