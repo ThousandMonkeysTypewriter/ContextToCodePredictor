@@ -1,17 +1,22 @@
 
 from tasks.env.config import CONFIG
+from tasks.env.config import PROGRAM_ID as P
 import numpy as np
 import time
 import sys
 
+IN1_PTR, IN2_PTR, OUT_PTR = range(3)
+LEFT, RIGHT = 0, 1
 
-class ScratchPad():           # Addition Environment
-    def __init__(self, start, finish, true_ans_, rows=CONFIG["ENVIRONMENT_ROW"], cols=CONFIG["ENVIRONMENT_COL"]):
+
+class DSL():           # Addition Environment
+    def __init__(self, start, finish, rows=CONFIG["ENVIRONMENT_ROW"], cols=CONFIG["ENVIRONMENT_COL"]):
         # Setup Internal ScratchPad
         self.rows, self.cols = rows, cols
-        self.true_ans = true_ans_
+        self.start, self.finish = start, finish
         self.scratchpad = np.zeros((self.rows, self.cols), dtype=np.int8)
 
+        self.trace = []
         # Initialize ScratchPad In1, In2
         self.init_scratchpad(start, finish)
 
@@ -19,7 +24,25 @@ class ScratchPad():           # Addition Environment
         self.in1_ptr, self.in2_ptr, self.out_ptr = self.ptrs = \
             [(x, -1) for x in range(3)]
 
-        # self.out_ptr = [(x, -1) for x in range(4)]
+    def transform(self):
+        """
+        Builds execution trace, adding individual steps to the instance variable trace. Each
+        step is represented by a triple (program_id : Integer, args : List, terminate: Boolean). If
+        a subroutine doesn't take arguments, the empty list is returned.
+        """
+        # Seed with the starting subroutine call
+        self.update_trace({"command":"TRANSFORM", "id":P["TRANSFORM"], "arg":[], "terminate":False})
+        self.true_ans = self.finish
+
+        # Execute Trace
+        finish = False;
+        while not finish:
+            self.trans1()
+            finish = self.lshift()
+
+    def update_trace(self, trace):
+        env = self.get_env()
+        self.trace.append({"prog":trace, "env":env})
 
     def init_scratchpad(self, start, finish):
         """
@@ -46,18 +69,30 @@ class ScratchPad():           # Addition Environment
                 return False
 
     def trans1(self):
-        out_ = self[self.in2_ptr]
-        in_ = self[self.in1_ptr]
-        return out_, in_
+        self.update_trace({"command":"TRANS1", "id":P["TRANS1"], "arg":[self[self.in1_ptr], self[self.in2_ptr]], "terminate":False})
 
-    def write_out(self, value, debug=False):
+        self.write_out( self[self.in2_ptr])
+        # Write to Output
+        self.update_trace({"command": "WRITE", "id": P["WRITE"], "arg": [0,  self[self.in2_ptr]], "terminate": False})
+
+    def write_out(self, value):
         self[self.out_ptr] = value
-        if debug:
-            self.pretty_print()
 
     def lshift(self):
+        # Move Inp1 Pointer Left
+        self.update_trace({"command": "MOVE_PTR", "id": P["MOVE_PTR"], "arg": [IN1_PTR, LEFT], "terminate": False})
+        self.update_trace({"command": "MOVE_PTR", "id": P["MOVE_PTR"], "arg": [IN2_PTR, LEFT], "terminate": False})
+
+        # Move Inp1 Pointer Left (check if done)
+        self.update_trace({"command": "MOVE_PTR", "id": P["MOVE_PTR"], "arg": [OUT_PTR, LEFT], "terminate": False})
+
         self.in1_ptr, self.in2_ptr, self.out_ptr = self.ptrs = \
             [(x, y - 1) for (x, y) in self.ptrs]
+
+        done = self.done()
+        if (done):
+            self.trace.append({"prog": {"command": "MOVE_PTR", "id": P["MOVE_PTR"], "arg": [0, 0], "terminate": True}, "env": {}})
+        return done
 
     def pretty_print(self):
         new_strs = ["".join(map(str, self[i])) for i in range(3)]
@@ -86,29 +121,6 @@ class ScratchPad():           # Addition Environment
         else:
             env[2][self[self.out_ptr]] = 1
         return env.flatten()
-
-    def execute(self, prog_id, args):
-        if prog_id == 0:               # MOVE!
-            ptr, lr = args
-            lr = (lr * 2) - 1
-
-            if ptr == 0:
-                self.in1_ptr = (self.in1_ptr[0], self.in1_ptr[1] + lr)
-            elif ptr == 1:
-                self.in2_ptr = (self.in2_ptr[0], self.in2_ptr[1] + lr)
-            elif ptr == 3:
-                self.out_ptr = (self.out_ptr[0], self.out_ptr[1] + lr)
-            else:
-                raise NotImplementedError
-            self.ptrs = [self.in1_ptr, self.in2_ptr, self.out_ptr]
-        elif prog_id == 1:             # WRITE!
-            ptr, val = args
-            if ptr == 0:
-                self[self.out_ptr] = val
-            elif ptr == 1:
-                self[self.carry_ptr] = val
-            else:
-                raise NotImplementedError
 
     def __getitem__(self, item):
         return self.scratchpad[item]

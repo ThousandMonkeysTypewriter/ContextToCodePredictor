@@ -1,1 +1,17 @@
-[(('TRANSFORM', 2), [], False), (('TRANS1', 3), [34, 57], False), (('WRITE', 1), [0, 57], False), (('MOVE_PTR', 0), [0, 0], False), (('MOVE_PTR', 0), [3, 0], False), (('TRANS1', 3), [58, 41], False), (('WRITE', 1), [0, 41], False), (('MOVE_PTR', 0), [0, 0], False), (('MOVE_PTR', 0), [3, 0], False), (('TRANS1', 3), [57, 34], False), (('WRITE', 1), [0, 34], False), (('MOVE_PTR', 0), [0, 0], False), (('MOVE_PTR', 0), [3, 0], True)]
+{'prog': {'id': 2, 'terminate': False, 'command': 'TRANSFORM', 'arg': []}, 'env': {'in1_ptr': 23, 'out_ptr': 0, 'in2_ptr': 37}}
+{'prog': {'id': 3, 'terminate': False, 'command': 'TRANS1', 'arg': [23, 37]}, 'env': {'in1_ptr': 23, 'out_ptr': 0, 'in2_ptr': 37}}
+{'prog': {'id': 1, 'terminate': False, 'command': 'WRITE', 'arg': [0, 37]}, 'env': {'in1_ptr': 23, 'out_ptr': 37, 'in2_ptr': 37}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [0, 0]}, 'env': {'in1_ptr': 23, 'out_ptr': 37, 'in2_ptr': 37}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [1, 0]}, 'env': {'in1_ptr': 23, 'out_ptr': 37, 'in2_ptr': 37}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [2, 0]}, 'env': {'in1_ptr': 23, 'out_ptr': 37, 'in2_ptr': 37}}
+{'prog': {'id': 3, 'terminate': False, 'command': 'TRANS1', 'arg': [18, 44]}, 'env': {'in1_ptr': 18, 'out_ptr': 0, 'in2_ptr': 44}}
+{'prog': {'id': 1, 'terminate': False, 'command': 'WRITE', 'arg': [0, 44]}, 'env': {'in1_ptr': 18, 'out_ptr': 44, 'in2_ptr': 44}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [0, 0]}, 'env': {'in1_ptr': 18, 'out_ptr': 44, 'in2_ptr': 44}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [1, 0]}, 'env': {'in1_ptr': 18, 'out_ptr': 44, 'in2_ptr': 44}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [2, 0]}, 'env': {'in1_ptr': 18, 'out_ptr': 44, 'in2_ptr': 44}}
+{'prog': {'id': 3, 'terminate': False, 'command': 'TRANS1', 'arg': [37, 23]}, 'env': {'in1_ptr': 37, 'out_ptr': 0, 'in2_ptr': 23}}
+{'prog': {'id': 1, 'terminate': False, 'command': 'WRITE', 'arg': [0, 23]}, 'env': {'in1_ptr': 37, 'out_ptr': 23, 'in2_ptr': 23}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [0, 0]}, 'env': {'in1_ptr': 37, 'out_ptr': 23, 'in2_ptr': 23}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [1, 0]}, 'env': {'in1_ptr': 37, 'out_ptr': 23, 'in2_ptr': 23}}
+{'prog': {'id': 0, 'terminate': False, 'command': 'MOVE_PTR', 'arg': [2, 0]}, 'env': {'in1_ptr': 37, 'out_ptr': 23, 'in2_ptr': 23}}
+{'prog': {'id': 0, 'terminate': True, 'command': 'MOVE_PTR', 'arg': [0, 0]}, 'env': {}}

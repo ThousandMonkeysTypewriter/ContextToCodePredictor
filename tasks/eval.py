@@ -10,11 +10,11 @@ import dsl.dsl
 import numpy as np
 import pickle
 import tensorflow as tf
-from dsl.dsl import ScratchPad
+from dsl.dsl import DSL
 
 MOVE_PID, WRITE_PID = 0, 1
 W_PTRS = {0: "OUT", 1: "CARRY"}
-PTRS = {0: "IN1_PTR", 1: "IN2_PTR", 2: "CARRY_PTR", 3: "OUT_PTR"}
+PTRS = {0: "IN1_PTR", 1: "IN2_PTR", 2: "OUT_PTR"}
 R_L = {0: "LEFT", 1: "RIGHT"}
 
 
@@ -73,17 +73,15 @@ def repl(session, npi, data, command):
                 myfile.write(str(s)+"\n")
 
         # Reset NPI States
-        print ("")
         npi.reset_state()
 
-        # Setup Environment
-        true_ans = y;
-
-        scratch = ScratchPad(x, y, true_ans)
+        scratch = DSL(x, y)
+        scratch.transform()
 
         prog_name, prog_id, term =  command, 2, False
 
         cont = 'c'
+        count = 0
 
         while cont == 'c' or cont == 'C':
             #Previous step
@@ -102,26 +100,20 @@ def repl(session, npi, data, command):
                 a_str = "[]"
 
             print ('Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(term)))
+            print(scratch.trace[count]["prog"])
             # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
             #                                                   scratch.in2_ptr[1],
             #                                                   scratch.carry_ptr[1],
             #                                                   scratch.out_ptr[1])
 
-            # Update Environment if MOVE or WRITE
-            if prog_id == MOVE_PID or prog_id == WRITE_PID:
-                scratch.execute(prog_id, arg)
-
-            # Print Environment
-            # scratch.pretty_print()
-
             # Get Environment, Argument Vectors
             # Current step
-            env_in, arg_in, prog_in = [scratch.get_env()], [get_args(arg, arg_in=True)], [[prog_id]]
+            env_in, arg_in, prog_in = [scratch.trace[count]["env"]], [get_args(arg, arg_in=True)], [[prog_id]]
             # print (env_in, arg, prog_in)
             t, n_p, n_args = session.run([npi.terminate, npi.program_distribution, npi.arguments],
                                          feed_dict={npi.env_in: env_in, npi.arg_in: arg_in,
                                                     npi.prg_in: prog_in})
-
+            count += 1
             # Next step
             if np.argmax(t) == 1:
                 # print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(True))
@@ -145,7 +137,7 @@ def repl(session, npi, data, command):
                 prog_id = np.argmax(n_p)
                 prog_name = PROGRAM_SET[prog_id][0]
                 term = False
-                print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
+                # print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
                 with open("log/prog_produced.txt", "a") as myfile:
                     myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + ","+str(np.argmax(t))+"\n")
 

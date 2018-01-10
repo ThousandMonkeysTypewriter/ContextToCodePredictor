@@ -9,7 +9,7 @@ import pickle
 import pandas as pd
 import numpy as np
 
-from dsl.trace import Trace
+from dsl.dsl import DSL
 import datetime
 import tensorflow as tf
 import re
@@ -17,7 +17,19 @@ import re
 def explode (str):
     return str.replace(':', ' ').replace(', ', ' ').replace('-', ' ').split(' ')
 
-def generate_addition(prefix, num_examples, debug, maximum, debug_every=1000):
+def exec_ (orig, formatted):
+    dsl = DSL(orig, formatted)
+    dsl.transform()
+
+    trace_ans = []
+    for i in dsl[2]:
+        trace_ans.insert(0, i)
+
+    assert (str(dsl.true_ans) == str(trace_ans)), "%s not equals %s in %s %s" % (
+        dsl.true_ans, trace_ans, orig, formatted)
+    return dsl.trace
+
+def generate_addition( prefix, num_examples, debug, debug_every=1000):
     """
     Generates addition data with the given string prefix (i.e. 'train', 'test') and the specified
     number of examples.
@@ -58,11 +70,11 @@ def generate_addition(prefix, num_examples, debug, maximum, debug_every=1000):
         for v in explode(d["v"]):
             value_list.append(members_list.index(v))
 
+        trace = exec_( key_list, value_list )
+
         if debug and count % debug_every == 0:
-            trace = Trace(key_list, value_list, True).trace
-        else:
-            trace = Trace(key_list, value_list).trace
-        print(d)
+            print(trace)
+
         data.append(( key_list, value_list, trace ))
     print(len(members_list))
     with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:

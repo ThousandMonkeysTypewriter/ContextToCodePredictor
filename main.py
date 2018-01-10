@@ -24,16 +24,9 @@ tf.app.flags.DEFINE_integer("num_epochs", 5, "Number of training epochs to perfo
 def main(_):
     if FLAGS.task == "addition":
         # Generate Data (if necessary)
-
-        maximum = 1
-
-        for i in range(CONFIG["ENVIRONMENT_COL"]):
-            maximum *= 10
-
-        # REDUCE
         if FLAGS.generate:
-            generate_addition('train', FLAGS.num_training, True, maximum)
-            generate_addition('test', FLAGS.num_test, True, maximum)
+            generate_addition('train', FLAGS.num_training, True)
+            generate_addition('test', FLAGS.num_test, True)
 
         # Train Model (if necessary)
         if FLAGS.do_train:

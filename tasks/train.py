@@ -6,7 +6,7 @@ the precomputed data.
 """
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
-from dsl.dsl import ScratchPad
+from dsl.dsl import DSL
 from tasks.env.config import CONFIG, get_args, LOG_PATH, DATA_PATH, CKPT_PATH
 import dsl.dsl
 import pickle
@@ -54,32 +54,19 @@ def train_addition(epochs, verbose=0):
             # Setup Environment
             in1, in2, steps = data[i]
 
-            scratch = ScratchPad(in1, in2, in2)
-
             x, y = steps[:-1], steps[1:]
             # Run through steps, and fit!
             step_def_loss, step_arg_loss, term_acc, prog_acc, = 0.0, 0.0, 0.0, 0.0
             arg0_acc, arg1_acc, arg2_acc, num_args = 0.0, 0.0, 0.0, 0
             for j in range(len(x)):
-                # print("-", x[j])
-                (prog_name, prog_in_id), arg, term = x[j]
-                (_, prog_out_id), arg_out, term_out = y[j]
-                # Update Environment if MOVE or WRITE
-                if prog_in_id == MOVE_PID or prog_in_id == WRITE_PID:
-                    scratch.execute(prog_in_id, arg)
-
-                # Print Environment
-                # scratch.pretty_print()
-
+                prog_name, prog_in_id, arg, term = x[j]["prog"]["command"], x[j]["prog"]["id"], x[j]["prog"]["arg"], x[j]["prog"]["terminate"]
+                _, prog_out_id, arg_out, term_out = y[j]["prog"]["command"], y[j]["prog"]["id"], y[j]["prog"]["arg"], y[j]["prog"]["terminate"]
                 # Get Environment, Argument Vectors
-                env_in = [scratch.get_env()]
+                env_in = [x[j]["env"]]
 
                 arg_in, arg_out = [get_args(arg, arg_in=True)], get_args(arg_out, arg_in=False)
                 prog_in, prog_out = [[prog_in_id]], [prog_out_id]
                 term_out = [1] if term_out else [0]
-                prog_out_vec = np.zeros((CONFIG["ARGUMENT_DEPTH"]), dtype=np.int32)
-                # prog_out_vec[prog_out_id] = 1;
-                prog_out_vec[CONFIG["DEFAULT_ARG_VALUE"]] = 1
 
                 # Fit!
                 if True:
@@ -107,10 +94,10 @@ def train_addition(epochs, verbose=0):
                 #     term_acc += t_acc
                 #     prog_acc += p_acc
 
-            print ("Epoch {0:02d} Step {1:03d} Default Step Loss {2:05f}, " \
-                  "Argument Step Loss {3:05f}, Term: {4:03f}, Prog: {5:03f}, A0: {6:03f}, " \
-                  "A1: {7:03f}, A2: {8:03}"\
-                .format(ep, i, step_def_loss / len(x), step_arg_loss / len(x), term_acc / len(x),
+            print ("Epoch {0:02d} Step {1:03d} " \
+                  "Argument Step Loss {2:05f}, Term: {3:03f}, Prog: {4:03f}, A0: {5:03f}, " \
+                  "A1: {6:03f}, A2: {7:03f}"\
+                .format(ep, i, step_arg_loss / len(x), term_acc / len(x),
                         prog_acc / len(x), arg0_acc / num_args, arg1_acc / num_args,
                         arg2_acc / num_args))
 
