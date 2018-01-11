@@ -223,8 +223,8 @@ class NPI():
         # Setup Label Placeholders
         self.y_term = tf.placeholder(tf.int64, shape=[None], name='Termination_Y')
         self.y_prog = tf.placeholder(tf.int64, shape=[None], name='Program_Y')
-        self.y_args = [tf.placeholder(tf.int64, shape=[None, self.arg_depth],
-                                      name='Arg{}_Y'.format(str(i))) for i in range(self.num_args)]
+        # self.y_args = [tf.placeholder(tf.int64, shape=[None, self.arg_depth],
+        #                               name='Arg{}_Y'.format(str(i))) for i in range(self.num_args)]
 
         # Build NPI LSTM Core, hidden state
         self.reset_state()
@@ -237,12 +237,12 @@ class NPI():
         self.program_distribution = self.key_net()
 
         # Build Argument Networks => Generates list of argument distributions
-        self.arguments = self.argument_net()
+        # self.arguments = self.argument_net()
 
         # Build Losses
-        self.t_loss, self.p_loss, self.a_losses = self.build_losses()
+        self.t_loss, self.p_loss = self.build_losses()
         self.default_loss = 2 * self.t_loss + self.p_loss
-        self.arg_loss = 0.25 * sum([self.t_loss, self.p_loss]) + sum(self.a_losses)
+        # self.arg_loss = 0.25 * sum([self.t_loss, self.p_loss])
 
         # Build Optimizer
         self.global_step = tf.Variable(0, trainable=False)
@@ -252,11 +252,11 @@ class NPI():
 
         # Build Metrics
         self.t_metric, self.p_metric, self.a_metrics = self.build_metrics()
-        self.metrics = [self.t_metric, self.p_metric] + self.a_metrics
+        # self.metrics = [self.t_metric, self.p_metric] + self.a_metrics
 
         # Build Train Ops
         self.default_train_op = self.opt.minimize(self.default_loss, global_step=self.global_step)
-        self.arg_train_op = self.opt.minimize(self.arg_loss, global_step=self.global_step)
+        # self.arg_train_op = self.opt.minimize(self.arg_loss, global_step=self.global_step)
 
     def reset_state(self):
         """
@@ -514,12 +514,12 @@ class NPI():
             logits=self.program_distribution), name='Program_Network_Loss')
 
         # Argument Network Losses
-        arg_losses = []
-        for i in range(self.num_args):
-            arg_losses.append(tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.y_args[i],
-                logits=self.arguments[i]), name='Argument{}_Network_Loss'.format(str(i))))
+        # arg_losses = []
+        # for i in range(self.num_args):
+        #     arg_losses.append(tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self.y_args[i],
+        #         logits=self.arguments[i]), name='Argument{}_Network_Loss'.format(str(i))))
 
-        return termination_loss, program_loss, arg_losses
+        return termination_loss, program_loss
 
     def build_metrics(self):
         """
@@ -534,9 +534,9 @@ class NPI():
                                                 tf.float32), name='Program_Accuracy')
 
         arg_metrics = []
-        for i in range(self.num_args):
-            arg_metrics.append(tf.reduce_mean(
-                tf.cast(tf.equal(tf.argmax(self.arguments[i], 1), tf.argmax(self.y_args[i], 1)),
-                        tf.float32), name='Argument{}_Accuracy'.format(str(i))))
+        # for i in range(self.num_args):
+        #     arg_metrics.append(tf.reduce_mean(
+        #         tf.cast(tf.equal(tf.argmax(self.arguments[i], 1), tf.argmax(self.y_args[i], 1)),
+        #                 tf.float32), name='Argument{}_Accuracy'.format(str(i))))
 
         return term_metric, program_metric, arg_metrics

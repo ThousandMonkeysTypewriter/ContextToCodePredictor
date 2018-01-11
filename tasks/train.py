@@ -70,36 +70,31 @@ def train_addition(epochs, verbose=0):
 
                 # Fit!
                 if True:
-                    loss, t_acc, p_acc, a_acc, _ = sess.run(
-                        [npi.arg_loss, npi.t_metric, npi.p_metric, npi.a_metrics, npi.arg_train_op],
+                    t_acc, p_acc, _, loss = sess.run(
+                        [npi.t_metric, npi.p_metric, npi.default_train_op, npi.default_loss],
                         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
-                                   npi.y_prog: prog_out, npi.y_term: term_out,
-                                   npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]],
-                                   npi.y_args[2]: [arg_out[2]]})
+                                   npi.y_prog: prog_out, npi.y_term: term_out})
                     # print({npi.prg_in: prog_in, npi.y_prog: prog_out, npi.y_term: term_out})
                     # print({npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]], npi.y_args[2]: [arg_out[2]]})
-                    step_arg_loss += loss
+                    # step_arg_loss += loss
                     term_acc += t_acc
                     prog_acc += p_acc
-                    arg0_acc += a_acc[0]
-                    arg1_acc += a_acc[1]
-                    arg2_acc += a_acc[2]
-                    num_args += 1
-                # else:
-                #     loss, t_acc, p_acc, _ = sess.run(
-                #         [npi.default_loss, npi.t_metric, npi.p_metric, npi.default_train_op],
-                #         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
-                #                    npi.y_prog: prog_out, npi.y_term: term_out})
-                #     step_def_loss += loss
-                #     term_acc += t_acc
-                #     prog_acc += p_acc
+                    step_def_loss += loss
+                    # arg0_acc += a_acc[0]
+                    # arg1_acc += a_acc[1]
+                    # arg2_acc += a_acc[2]
+                    # num_args += 1
+                    # else:
+                    #     loss, t_acc, p_acc, _ = sess.run(
+                    #         [npi.default_loss, npi.t_metric, npi.p_metric, npi.default_train_op],
+                    #         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
+                    #                    npi.y_prog: prog_out, npi.y_term: term_out})
+                    #     step_def_loss += loss
+                    #     term_acc += t_acc
+                    #     prog_acc += p_acc
 
-            print ("Epoch {0:02d} Step {1:03d} " \
-                  "Argument Step Loss {2:05f}, Term: {3:03f}, Prog: {4:03f}, A0: {5:03f}, " \
-                  "A1: {6:03f}, A2: {7:03f}"\
-                .format(ep, i, step_arg_loss / len(x), term_acc / len(x),
-                        prog_acc / len(x), arg0_acc / num_args, arg1_acc / num_args,
-                        arg2_acc / num_args))
+            print ("Epoch {0:02d} Step {1:03d} Loss: {2:03f} Term: {3:03f}, Prog: {4:03f}" \
+                    .format(ep, i, step_arg_loss / len(x), term_acc / len(x), prog_acc / len(x)))
 
         # Save Model
         saver.save(sess, CKPT_PATH)

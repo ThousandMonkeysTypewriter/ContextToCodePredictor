@@ -99,7 +99,6 @@ def repl(session, npi, data, command):
                 a_str = "[]"
             # else:
             #     a_str = "[]"
-            print(arg)
             print ('Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(term)))
             print(scratch.trace[count]["prog"])
             # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
