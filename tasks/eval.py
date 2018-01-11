@@ -13,8 +13,6 @@ import tensorflow as tf
 from dsl.dsl import DSL
 
 MOVE_PID, WRITE_PID = 0, 1
-W_PTRS = {0: "OUT", 1: "CARRY"}
-PTRS = {0: "IN1_PTR", 1: "IN2_PTR", 2: "OUT_PTR"}
 R_L = {0: "LEFT", 1: "RIGHT"}
 
 
@@ -90,15 +88,18 @@ def repl(session, npi, data, command):
             else:
                 arg = []
             # Print Step Output
-            if prog_id == MOVE_PID:
-                a0, a1 = PTRS.get(arg[0], "OOPS!"), R_L[arg[1]]
-                a_str = "[%s, %s]" % (str(a0), str(a1))
-            elif prog_id == WRITE_PID:
-                a0, a1 = W_PTRS[arg[0]], arg[1]
-                a_str = "[%s, %s]" % (str(a0), str(a1))
+            # if prog_id == MOVE_PID:
+            #     a0, a1 = PTRS.get(arg[0], "OOPS!"), R_L[arg[1]]
+            #     a_str = "[%s, %s]" % (str(a0), str(a1))
+            # elif prog_id == WRITE_PID:
+            #     a0, a1 = W_PTRS[arg[0]], arg[1]
+            if arg:
+                a_str = "[%s, %s]" % (str(arg[0]), str(arg[1]))
             else:
                 a_str = "[]"
-
+            # else:
+            #     a_str = "[]"
+            print(arg)
             print ('Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(term)))
             print(scratch.trace[count]["prog"])
             # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
