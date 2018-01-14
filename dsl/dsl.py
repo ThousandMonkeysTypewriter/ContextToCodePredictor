@@ -71,12 +71,25 @@ class DSL():           # Addition Environment
     def trans1(self):
         self.update_trace({"command":"TRANS1", "id":P["TRANS1"], "arg":[self[self.in1_ptr], self[self.in2_ptr]], "terminate":False})
 
-        self.write_out( self[self.in2_ptr])
+        self.write_out(self[self.in2_ptr])
         # Write to Output
         self.update_trace({"command": "WRITE", "id": P["WRITE"], "arg": [0,  self[self.in2_ptr]], "terminate": False})
 
     def write_out(self, value):
         self[self.out_ptr] = value
+
+    def get_code(self, value):
+
+        if value % 4 == 0:
+            res = 6
+        elif value % 3 == 0:
+            res = 7
+        elif value % 2 == 0:
+            res = 8
+        else:
+            res = 9
+
+        return res
 
     def lshift(self):
         # Move Inp1 Pointer Left

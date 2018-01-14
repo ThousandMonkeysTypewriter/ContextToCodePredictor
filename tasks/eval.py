@@ -83,23 +83,23 @@ def repl(session, npi, data, command):
 
         while cont == 'c' or cont == 'C':
             #Previous step
-            if prog_id == MOVE_PID or prog_id == WRITE_PID:
-                arg = [np.argmax(n_args[0]), np.argmax(n_args[1])]
-            else:
-                arg = []
+            # if prog_id == MOVE_PID or prog_id == WRITE_PID:
+            #     arg = [np.argmax(n_args[0]), np.argmax(n_args[1])]
+            # else:
+            #     arg = []
             # Print Step Output
             # if prog_id == MOVE_PID:
             #     a0, a1 = PTRS.get(arg[0], "OOPS!"), R_L[arg[1]]
             #     a_str = "[%s, %s]" % (str(a0), str(a1))
             # elif prog_id == WRITE_PID:
             #     a0, a1 = W_PTRS[arg[0]], arg[1]
-            if arg:
-                a_str = "[%s, %s]" % (str(arg[0]), str(arg[1]))
-            else:
-                a_str = "[]"
+            # if arg:
+            #     a_str = "[%s, %s]" % (str(arg[0]), str(arg[1]))
             # else:
             #     a_str = "[]"
-            print ('Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(term)))
+            # else:
+            #     a_str = "[]"
+            print ('Step: %s, Terminate: %s' % (prog_name, str(term)))
             print(scratch.trace[count]["prog"])
             # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
             #                                                   scratch.in2_ptr[1],
@@ -108,11 +108,10 @@ def repl(session, npi, data, command):
 
             # Get Environment, Argument Vectors
             # Current step
-            env_in, arg_in, prog_in = [scratch.trace[count]["env"]], [get_args(arg, arg_in=True)], [[prog_id]]
+            env_in, arg_in, prog_in = [scratch.trace[count]["env"]],[get_args(scratch.trace[count]["prog"]["arg"], arg_in=True)], [[prog_id]]
             # print (env_in, arg, prog_in)
-            t, n_p, n_args = session.run([npi.terminate, npi.program_distribution, npi.arguments],
-                                         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in,
-                                                    npi.prg_in: prog_in})
+            t, n_p = session.run([npi.terminate, npi.program_distribution],
+                                         feed_dict={npi.env_in: env_in, npi.arg_in:arg_in, npi.prg_in: prog_in})
             count += 1
             # Next step
             if np.argmax(t) == 1:
@@ -130,7 +129,7 @@ def repl(session, npi, data, command):
                     trace_ans.insert(0, i)
                 # print ("Input:  %s, %s, Output:  %s, %s" % (str(x), str(y), str(output), scratch.true_ans))
                 with open("log/prog_produced.txt", "a") as myfile:
-                    myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + ", terminate: true\n")
+                    myfile.write(str(prog_id) + ", terminate: true\n")
                 return True
 
             else:
@@ -139,7 +138,7 @@ def repl(session, npi, data, command):
                 term = False
                 # print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
                 with open("log/prog_produced.txt", "a") as myfile:
-                    myfile.write(str(prog_id) + "," + str(np.argmax(n_args[0])) + "," + str(np.argmax(n_args[1])) + ","+str(np.argmax(t))+"\n")
+                    myfile.write(str(prog_id) + ","+str(np.argmax(t))+"\n")
 
             # cont = raw_input('Continue? ')
 
