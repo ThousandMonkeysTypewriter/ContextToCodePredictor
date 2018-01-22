@@ -120,8 +120,8 @@ def repl(session, npi, data, command):
             t, n_p = session.run([npi.terminate, npi.program_distribution],
                                          feed_dict={npi.env_in: env_in, npi.arg_in:arg_in, npi.prg_in: prog_in})
             count += 1
-            print ('Step: %s, Terminate: %s' % (prog_name, str(term)))
-            print(scratch.trace[count]["prog"], " & ", np.argmax(t))
+            print ('Step: %s, Terminate: %d' % (prog_name, np.argmax(t)))
+            print(scratch.trace[count]["prog"])
             # Next step
             if np.argmax(t) == 1:
                 # print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(True))
@@ -144,7 +144,7 @@ def repl(session, npi, data, command):
             else:
                 prog_id = np.argmax(n_p)
                 prog_name = PROGRAM_SET[prog_id][0]
-                term = False
+                
                 # print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
                 with open("log/prog_produced.txt", "a") as myfile:
                     myfile.write(str(prog_id) + ","+str(np.argmax(t))+"\n")
