@@ -7,7 +7,8 @@ Embedding Information, etc.
 import numpy as np
 import tensorflow as tf
 
-DATA_PATH = "tasks/env/data/train.pik"
+DATA_PATH_TRAIN = "tasks/env/data/train.pik"
+DATA_PATH_TEST = "tasks/env/data/test.pik"
 LOG_PATH = "log/"
 CKPT_PATH = "log/model.ckpt"
 

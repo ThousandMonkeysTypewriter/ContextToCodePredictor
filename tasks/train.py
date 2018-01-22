@@ -7,7 +7,7 @@ the precomputed data.
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
 from dsl.dsl import DSL
-from tasks.env.config import CONFIG, get_args, LOG_PATH, DATA_PATH, CKPT_PATH
+from tasks.env.config import CONFIG, get_args, LOG_PATH, DATA_PATH_TRAIN, CKPT_PATH
 import dsl.dsl
 import pickle
 import tensorflow as tf
@@ -26,7 +26,7 @@ def train_addition(epochs, verbose=0):
     :param epochs: Number of epochs to train for.
     """
     # Load Data
-    with open(DATA_PATH, 'rb') as f:
+    with open(DATA_PATH_TRAIN, 'rb') as f:
         data = pickle.load(f)
 
     # Initialize Addition Core
@@ -106,3 +106,4 @@ def train_addition(epochs, verbose=0):
 
         # Save Model
         saver.save(sess, CKPT_PATH)
+        tf.train.write_graph(sess.graph_def, '/tmp/tf/log', 'graph.pb')

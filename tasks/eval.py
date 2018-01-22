@@ -5,12 +5,13 @@ Loads in an Addition NPI, and starts a REPL for interactive addition.
 """
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
-from tasks.env.config import CONFIG, get_args, PROGRAM_SET, LOG_PATH, DATA_PATH, CKPT_PATH
+from tasks.env.config import CONFIG, get_args, PROGRAM_SET, LOG_PATH, DATA_PATH_TEST, CKPT_PATH
 import dsl.dsl
 import numpy as np
 import pickle
 import tensorflow as tf
 from dsl.dsl import DSL
+from tensorflow.python.platform import gfile
 
 MOVE_PID, WRITE_PID = 0, 1
 R_L = {0: "LEFT", 1: "RIGHT"}
@@ -22,7 +23,7 @@ def evaluate_addition():
     """
     with tf.Session() as sess:
         # Load Data
-        with open(DATA_PATH, 'rb') as f:
+        with open(DATA_PATH_TEST, 'rb') as f:
             data = pickle.load(f)
 
         # Initialize Addition Core
@@ -35,6 +36,13 @@ def evaluate_addition():
         saver = tf.train.Saver()
         saver.restore(sess, CKPT_PATH)
 
+        # with gfile.FastGFile("/root/NeuralProgramSynthesis/log/graph.pb", 'rb') as f:
+        #     graph_def = tf.GraphDef()
+        #     graph_def.ParseFromString(f.read())
+        #     persisted_sess.graph.as_default()
+        #     tf.import_graph_def(graph_def)
+        # print("map variables")
+
         # Run REPL
         eq = 0
         not_eq=0
@@ -43,7 +51,7 @@ def evaluate_addition():
             # try:
             res = repl(sess, npi, data, "TRANSFORM")
             # except:
-            #     print ("")
+            # print ("")
             if res:
                eq+=1
             else:
@@ -99,8 +107,7 @@ def repl(session, npi, data, command):
             #     a_str = "[]"
             # else:
             #     a_str = "[]"
-            print ('Step: %s, Terminate: %s' % (prog_name, str(term)))
-            print(scratch.trace[count]["prog"])
+
             # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
             #                                                   scratch.in2_ptr[1],
             #                                                   scratch.carry_ptr[1],
@@ -113,6 +120,8 @@ def repl(session, npi, data, command):
             t, n_p = session.run([npi.terminate, npi.program_distribution],
                                          feed_dict={npi.env_in: env_in, npi.arg_in:arg_in, npi.prg_in: prog_in})
             count += 1
+            print ('Step: %s, Terminate: %s' % (prog_name, str(term)))
+            print(scratch.trace[count]["prog"], " & ", np.argmax(t))
             # Next step
             if np.argmax(t) == 1:
                 # print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(True))
