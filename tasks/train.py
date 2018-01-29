@@ -6,9 +6,7 @@ the precomputed data.
 """
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
-from dsl.dsl import DSL
 from tasks.env.config import CONFIG, get_args, LOG_PATH, DATA_PATH_TRAIN, CKPT_PATH
-import dsl.dsl
 import pickle
 import tensorflow as tf
 import numpy as np

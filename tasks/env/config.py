@@ -11,6 +11,7 @@ DATA_PATH_TRAIN = "tasks/env/data/train.pik"
 DATA_PATH_TEST = "tasks/env/data/test.pik"
 LOG_PATH = "log/"
 CKPT_PATH = "log/model.ckpt"
+DSL_DATA_PATH = "dsl/data/data_buffer.json"
 
 CONFIG = {
     "ENVIRONMENT_ROW": 3,         # Input 1, Input 2, Carry, Output

@@ -144,7 +144,7 @@ def repl(session, npi, data, command):
             else:
                 prog_id = np.argmax(n_p)
                 prog_name = PROGRAM_SET[prog_id][0]
-                
+
                 # print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
                 with open("log/prog_produced.txt", "a") as myfile:
                     myfile.write(str(prog_id) + ","+str(np.argmax(t))+"\n")

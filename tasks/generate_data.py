@@ -13,6 +13,9 @@ from dsl.dsl import DSL
 import datetime
 import tensorflow as tf
 import re
+import json
+from tasks.env.config import DSL_DATA_PATH
+from pprint import pprint
 
 def explode (str):
     return str.replace(':', ' ').replace(', ', ' ').replace('-', ' ').split(' ')
@@ -37,6 +40,12 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
     :param prefix: String prefix for saving the file ('train', 'test')
     :param num_examples: Number of examples to generate.
     """
+
+    with open(DSL_DATA_PATH, 'r') as handle:
+        parsed = json.load(handle)
+    pprint(parsed[0]['0']['program'])
+    os._exit(1);
+
     times = pd.date_range('2000-10-01', end='2017-12-31', freq='5min').tolist()
 
     data = []
