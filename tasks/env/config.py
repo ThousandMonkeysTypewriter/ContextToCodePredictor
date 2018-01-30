@@ -18,7 +18,7 @@ CONFIG = {
     "ENVIRONMENT_COL": 3,         # 10-Digit Maximum for Addition Task
     "ENVIRONMENT_DEPTH": 74,      # Size of each element vector => One-Hot, Options: 0-9
 
-    "ARGUMENT_NUM": 3,            # Maximum Number of Program Arguments
+    "ARGUMENT_NUM": 1,            # Maximum Number of Program Arguments
     "ARGUMENT_DEPTH": 75,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
     "DEFAULT_ARG_VALUE": 74,      # Default Argument Value
 
@@ -68,5 +68,12 @@ def get_args(args, arg_in=True):
             arg_vec[i][CONFIG["DEFAULT_ARG_VALUE"]] = 1
     return arg_vec.flatten() if arg_in else arg_vec
 
+def get_env(data):
+    env = np.zeros((CONFIG["ENVIRONMENT_ROW"], CONFIG["ENVIRONMENT_DEPTH"]), dtype=np.int32)
+
+    env[0][data["answer"]] = 1
+    env[1][data["is_redirect"]] = 1
+
+    return env.flatten()
 
 

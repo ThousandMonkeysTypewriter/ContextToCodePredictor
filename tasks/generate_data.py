@@ -16,6 +16,7 @@ import re
 import json
 from tasks.env.config import DSL_DATA_PATH
 from pprint import pprint
+import collections
 
 def explode (str):
     return str.replace(':', ' ').replace(', ', ' ').replace('-', ' ').split(' ')
@@ -43,48 +44,79 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
 
     with open(DSL_DATA_PATH, 'r') as handle:
         parsed = json.load(handle)
-    pprint(parsed[0]['0']['program'])
-    os._exit(1);
 
-    times = pd.date_range('2000-10-01', end='2017-12-31', freq='5min').tolist()
-
+    # times = pd.date_range('2000-10-01', end='2017-12-31', freq='5min').tolist()
+    #
     data = []
-    dates = []
-    members_set = set()
-    for i in np.random.choice(times, size=num_examples, replace=False):
-        # key = i.strftime("%Y-%m-%d %H:%M:%S")
-        # value = i.strftime("%H:%M:%S %A, %d %B %Y")
+    # dates = []
+    # members_set = set()
+    # for i in np.random.choice(times, size=num_examples, replace=False):
+    #     # key = i.strftime("%Y-%m-%d %H:%M:%S")
+    #     # value = i.strftime("%H:%M:%S %A, %d %B %Y")
+    #
+    #     key = i.strftime("y%Y m%m d%d")
+    #     value = i.strftime("d%d m%B y%Y")
+    #
+    #     # key = i.strftime("m%m 0 0")
+    #     # value = i.strftime("m%B 0 0")
+    #
+    #     dates.append({"k":key, "v":value})
+    #
+    #     for m in explode(value):
+    #         members_set.add(m)
+    #     for m in explode(key):
+    #         members_set.add(m)
+    # members_list = list(members_set)
+    # count = 0
+    for row_r in parsed:
+        row = collections.OrderedDict(sorted(row_r.items()))
+        trace = []
+        for key, values in row.items():
+            step = {}
+        # count += 1
+        # key_list = []
+        # value_list = []
+        # for k in explode(d["k"]):
+        #     key_list.append(members_list.index(k))
+        #
+        # for v in explode(d["v"]):
+        #     value_list.append(members_list.index(v))
+        #
+        # trace = exec_( key_list, value_list )
+        #
+        # if debug and count % debug_every == 0:
+        #     print(trace)
+        #     if (k == "terminate"):
+        #     print(key)
+            for k, v in values.items():
+                if k == 'environment':
+                    environment = {}
+                    for e_k, e_v in v.items():
+                        if e_k == 'terminate':
+                            environment['terminate'] = e_v.get('value')
+                        if e_k == 'answer':
+                            environment['answer'] = e_v.get('value')
+                        if e_k == 'is_redirect':
+                            environment['is_redirect'] = e_v.get('value')
+                    step['environment'] = environment
+                elif k == 'argument':
+                    args = {}
+                    for e_k, e_v in v.items():
+                        if e_k == 'id':
+                            args['id'] = e_v.get('value')
+                    step['args'] = args
+                elif k == 'program':
+                    program = {}
+                    for e_k, e_v in v.items():
+                        if e_k == 'program':
+                            program['program'] = e_v.get('value')
+                        if e_k == 'id':
+                            program['id'] = e_v.get('value')
 
-        key = i.strftime("y%Y m%m d%d")
-        value = i.strftime("d%d m%B y%Y")
-
-        # key = i.strftime("m%m 0 0")
-        # value = i.strftime("m%B 0 0")
-
-        dates.append({"k":key, "v":value})
-
-        for m in explode(value):
-            members_set.add(m)
-        for m in explode(key):
-            members_set.add(m)
-    members_list = list(members_set)
-    count = 0
-    for d in dates:
-        count += 1
-        key_list = []
-        value_list = []
-        for k in explode(d["k"]):
-            key_list.append(members_list.index(k))
-
-        for v in explode(d["v"]):
-            value_list.append(members_list.index(v))
-
-        trace = exec_( key_list, value_list )
-
-        if debug and count % debug_every == 0:
-            print(trace)
-
-        data.append(( key_list, value_list, trace ))
-    print(len(members_list))
+                    step['program'] = program
+            trace.append(step)
+        print(trace)
+                    # ({"command": "MOVE_PTR", "id": P["MOVE_PTR"], "arg": [OUT_PTR, LEFT], "terminate": False})
+        data.append(trace)
     with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:
         pickle.dump(data, f)

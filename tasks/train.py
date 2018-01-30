@@ -7,6 +7,7 @@ the precomputed data.
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
 from tasks.env.config import CONFIG, get_args, LOG_PATH, DATA_PATH_TRAIN, CKPT_PATH
+from tasks.env.config import get_env
 import pickle
 import tensorflow as tf
 import numpy as np
@@ -44,13 +45,13 @@ def train_addition(epochs, verbose=0):
 
     # Start Training
     for ep in range(1, epochs + 1):
-        print(len(data))
         for i in range(len(data)):
             # Reset NPI States
             npi.reset_state()
 
             # Setup Environment
-            in1, in2, steps = data[i]
+            steps = data[i]
+            print(data[i])
 
             x, y = steps[:-1], steps[1:]
             # Run through steps, and fit!
@@ -60,10 +61,12 @@ def train_addition(epochs, verbose=0):
             # dsl = DSL([], [])
 
             for j in range(len(x)):
-                prog_name, prog_in_id, arg, term = x[j]["prog"]["command"], x[j]["prog"]["id"], x[j]["prog"]["arg"], x[j]["prog"]["terminate"]
-                prog_name_out, prog_out_id, arg_out, term_out = y[j]["prog"]["command"], y[j]["prog"]["id"], y[j]["prog"]["arg"], y[j]["prog"]["terminate"]
+                # {'program': {'program': 'check'}, 'environment': {'terminate': False, 'answer': 1, 'is_redirect': 2},'args': {'id': 0}}
+                print(y[j])
+                prog_name, prog_in_id, arg, term = x[j]["program"]["program"], x[j]["program"]["id"], x[j]["args"]["id"], x[j]["environment"]["terminate"]
+                prog_name_out, prog_out_id, arg_out, term_out = y[j]["program"]["program"], y[j]["program"]["id"], y[j]["args"]["id"], y[j]["environment"]["terminate"]
                 # Get Environment, Argument Vectors
-                env_in = [x[j]["env"]]
+                env_in = [get_env(x[j]["environment"])]
 
                 arg_in, arg_out = [get_args(arg, arg_in=True)], get_args(arg_out, arg_in=False)
                 term_out = [1] if term_out else [0]
