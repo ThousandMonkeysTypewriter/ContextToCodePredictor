@@ -6,11 +6,10 @@ Loads in an Addition NPI, and starts a REPL for interactive addition.
 from model.npi import NPI
 from tasks.env.addition import AdditionCore
 from tasks.env.config import CONFIG, get_args, PROGRAM_SET, LOG_PATH, DATA_PATH_TEST, CKPT_PATH
-import dsl.dsl
+from tasks.env.config import get_env
 import numpy as np
 import pickle
 import tensorflow as tf
-from dsl.dsl import DSL
 from tensorflow.python.platform import gfile
 
 MOVE_PID, WRITE_PID = 0, 1
@@ -44,24 +43,20 @@ def evaluate_addition():
         # print("map variables")
 
         # Run REPL
-        eq = 0
-        not_eq=0
-        for x in range(0, 1):
+        for x in range(0, 10):
             res = ""
             # try:
-            res = repl(sess, npi, data, "TRANSFORM")
+            repl(sess, npi, data, x)
             # except:
-            # print ("")
-            if res:
-               eq+=1
-            else:
-               not_eq+=1
-        print(eq, not_eq)
+            print ("--------------------------")
+            # if res:
+            #    eq+=1
+            # else:
+            #    not_eq+=1
         # repeat()
 
-def repl(session, npi, data, command):
-        x, y, steps = data[3]
-
+def repl(session, npi, data, pos):
+        steps = data[pos]
         f = open('log/numbers.txt', 'r+')
         f.truncate()
 
@@ -71,9 +66,6 @@ def repl(session, npi, data, command):
         f = open('log/prog_produced.txt', 'r+')
         f.truncate()
 
-        with open("log/numbers.txt", "a") as myfile:
-            myfile.write(str(x)+","+str(y) + "\n")
-
         with open("log/prog_orig.txt", "a") as myfile:
             for s in steps:
                 myfile.write(str(s)+"\n")
@@ -81,47 +73,31 @@ def repl(session, npi, data, command):
         # Reset NPI States
         npi.reset_state()
 
-        scratch = DSL(x, y)
-        scratch.transform()
-
-        prog_name, prog_id, term =  command, 2, False
-
         cont = 'c'
         count = 0
 
-        while cont == 'c' or cont == 'C':
-            #Previous step
-            # if prog_id == MOVE_PID or prog_id == WRITE_PID:
-            #     arg = [np.argmax(n_args[0]), np.argmax(n_args[1])]
-            # else:
-            #     arg = []
-            # Print Step Output
-            # if prog_id == MOVE_PID:
-            #     a0, a1 = PTRS.get(arg[0], "OOPS!"), R_L[arg[1]]
-            #     a_str = "[%s, %s]" % (str(a0), str(a1))
-            # elif prog_id == WRITE_PID:
-            #     a0, a1 = W_PTRS[arg[0]], arg[1]
-            # if arg:
-            #     a_str = "[%s, %s]" % (str(arg[0]), str(arg[1]))
-            # else:
-            #     a_str = "[]"
-            # else:
-            #     a_str = "[]"
+        x, y = steps[:-1], steps[1:]
 
-            # print 'IN 1: %s, IN 2: %s, CARRY: %s, OUT: %s' % (scratch.in1_ptr[1],
-            #                                                   scratch.in2_ptr[1],
-            #                                                   scratch.carry_ptr[1],
-            #                                                   scratch.out_ptr[1])
+        for j in range(len(x)):
+            if count == 0:
+                print ('y = Prog_id: %s, Terminate: %d' % (x[j]["program"]["id"], x[j]["environment"]["terminate"]))
+                print ('y` = Prog_id: %s, Terminate: %d' % (x[j]["program"]["id"], x[j]["environment"]["terminate"]))
 
-            # Get Environment, Argument Vectors
-            # Current step
-            env_in, arg_in, prog_in = [scratch.trace[count]["env"]],[get_args(scratch.trace[count]["prog"]["arg"], arg_in=True)], [[prog_id]]
+            prog_in, arg_in = [[x[j]["program"]["id"]]],  [get_args(x[j]["args"]["id"], arg_in=True)]
+            prog_out, terminate_out = y[j]["program"]["id"],  y[j]["environment"]["terminate"]
+            env_in = [get_env(x[j]["environment"])]
+
             # print (env_in, arg, prog_in)
             t, n_p = session.run([npi.terminate, npi.program_distribution],
                                          feed_dict={npi.env_in: env_in, npi.arg_in:arg_in, npi.prg_in: prog_in})
+
+            prog_id = np.argmax(n_p)
+
+            print ('y= Prog_id: %s, Terminate: %d' % (prog_id, np.argmax(t)))
+            print ('y` = Prog_id: %s, Terminate: %d' % (prog_out, terminate_out))
+
             count += 1
-            print ('Step: %s, Terminate: %d' % (prog_name, np.argmax(t)))
-            print(scratch.trace[count]["prog"])
+
             # Next step
             if np.argmax(t) == 1:
                 # print 'Step: %s, Arguments: %s, Terminate: %s' % (prog_name, a_str, str(True))
@@ -133,17 +109,13 @@ def repl(session, npi, data, command):
                 # if prog_id == MOVE_PID or prog_id == WRITE_PID:
                 #     scratch.execute(prog_id, arg)
 
-                trace_ans = []
-                for i in scratch[2]:
-                    trace_ans.insert(0, i)
                 # print ("Input:  %s, %s, Output:  %s, %s" % (str(x), str(y), str(output), scratch.true_ans))
                 with open("log/prog_produced.txt", "a") as myfile:
                     myfile.write(str(prog_id) + ", terminate: true\n")
                 return True
 
             else:
-                prog_id = np.argmax(n_p)
-                prog_name = PROGRAM_SET[prog_id][0]
+                # prog_name = PROGRAM_SET[prog_id][0]
 
                 # print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
                 with open("log/prog_produced.txt", "a") as myfile:
@@ -152,12 +124,6 @@ def repl(session, npi, data, command):
             # cont = raw_input('Continue? ')
 
 def repeat():
-        with open("log/numbers.txt", 'r') as f:
-            fl = f.readline()
-            x, y = fl.rstrip('\n').split(",")
-            # print(x,y)
-            scratch = ScratchPad(x, y, int(x)-int(y))
-
         lines = [line.rstrip('\n') for line in open("log/prog.txt")]
 
         for c in lines:

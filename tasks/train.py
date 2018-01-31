@@ -51,7 +51,7 @@ def train_addition(epochs, verbose=0):
 
             # Setup Environment
             steps = data[i]
-            print(data[i])
+            # print(data[i])
 
             x, y = steps[:-1], steps[1:]
             # Run through steps, and fit!
@@ -62,7 +62,7 @@ def train_addition(epochs, verbose=0):
 
             for j in range(len(x)):
                 # {'program': {'program': 'check'}, 'environment': {'terminate': False, 'answer': 1, 'is_redirect': 2},'args': {'id': 0}}
-                print(y[j])
+                # print(y[j])
                 prog_name, prog_in_id, arg, term = x[j]["program"]["program"], x[j]["program"]["id"], x[j]["args"]["id"], x[j]["environment"]["terminate"]
                 prog_name_out, prog_out_id, arg_out, term_out = y[j]["program"]["program"], y[j]["program"]["id"], y[j]["args"]["id"], y[j]["environment"]["terminate"]
                 # Get Environment, Argument Vectors
@@ -83,7 +83,7 @@ def train_addition(epochs, verbose=0):
                         [npi.t_metric, npi.p_metric, npi.default_train_op, npi.default_loss],
                         feed_dict={npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in,
                                    npi.y_prog: prog_out, npi.y_term: term_out})
-                    # print({npi.prg_in: prog_in, npi.y_prog: prog_out, npi.y_term: term_out})
+                    # print({npi.env_in: env_in, npi.arg_in: arg_in, npi.prg_in: prog_in, npi.y_prog: prog_out, npi.y_term: term_out})
                     # print({npi.y_args[0]: [arg_out[0]], npi.y_args[1]: [arg_out[1]], npi.y_args[2]: [arg_out[2]]})
                     # step_arg_loss += loss
                     term_acc += t_acc
@@ -103,8 +103,10 @@ def train_addition(epochs, verbose=0):
                     #     prog_acc += p_acc
 
             print ("Epoch {0:02d} Step {1:03d} Loss: {2:03f} Term: {3:03f}, Prog: {4:03f}" \
-                    .format(ep, i, step_arg_loss / len(x), term_acc / len(x), prog_acc / len(x)))
+                    .format(ep, i, step_def_loss / len(x), term_acc / len(x), prog_acc / len(x)))
 
         # Save Model
         saver.save(sess, CKPT_PATH)
-        tf.train.write_graph(sess.graph_def, '/tmp/tf/log', 'graph.pb')
+        # !!!!
+        # tf.train.write_graph(sess.graph_def, '/tmp/tf/log', 'graph.pb')
+        # !!!!

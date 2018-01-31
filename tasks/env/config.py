@@ -22,8 +22,8 @@ CONFIG = {
     "ARGUMENT_DEPTH": 75,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
     "DEFAULT_ARG_VALUE": 74,      # Default Argument Value
 
-    "PROGRAM_NUM": 5,             # Maximum Number of Subroutines
-    "PROGRAM_KEY_SIZE": 5,        # Size of the Program Keys
+    "PROGRAM_NUM": 7,             # Maximum Number of Subroutines
+    "PROGRAM_KEY_SIZE": 7,        # Size of the Program Keys
     "PROGRAM_EMBEDDING_SIZE": 10  # Size of the Program Embeddings
 }
 
@@ -57,15 +57,15 @@ def get_args(args, arg_in=True):
     else:
         arg_vec = [np.zeros((CONFIG["ARGUMENT_DEPTH"]), dtype=np.int32) for _ in
                    range(CONFIG["ARGUMENT_NUM"])]
-    if len(args) > 0:
-        for i in range(CONFIG["ARGUMENT_NUM"]):
-            if i >= len(args):
-                arg_vec[i][CONFIG["DEFAULT_ARG_VALUE"]] = 1
-            else:
-                arg_vec[i][args[i]] = 1
-    else:
-        for i in range(CONFIG["ARGUMENT_NUM"]):
-            arg_vec[i][CONFIG["DEFAULT_ARG_VALUE"]] = 1
+    # if len(args) > 0:
+    #     for i in range(CONFIG["ARGUMENT_NUM"]):
+    #         if i >= len(args):
+    #             arg_vec[i][CONFIG["DEFAULT_ARG_VALUE"]] = 1
+    #         else:
+    #             arg_vec[i][args[i]] = 1
+    # else:
+    for i in range(CONFIG["ARGUMENT_NUM"]):
+        arg_vec[i][CONFIG["DEFAULT_ARG_VALUE"]] = 1
     return arg_vec.flatten() if arg_in else arg_vec
 
 def get_env(data):
