@@ -35,10 +35,10 @@ def evaluate_addition():
         saver = tf.train.Saver()
         saver.restore(sess, CKPT_PATH)
 
-        # with gfile.FastGFile("/root/NeuralProgramSynthesis/log/graph.pb", 'rb') as f:
+        # with gfile.FastGFile("/tmp/tf/log/graph.pb", 'rb') as f:
         #     graph_def = tf.GraphDef()
         #     graph_def.ParseFromString(f.read())
-        #     persisted_sess.graph.as_default()
+        #     sess.graph.as_default()
         #     tf.import_graph_def(graph_def)
         # print("map variables")
 
@@ -73,7 +73,6 @@ def repl(session, npi, data, pos):
         # Reset NPI States
         npi.reset_state()
 
-        cont = 'c'
         count = 0
 
         x, y = steps[:-1], steps[1:]

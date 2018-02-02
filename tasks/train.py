@@ -108,5 +108,6 @@ def train_addition(epochs, verbose=0):
         # Save Model
         saver.save(sess, CKPT_PATH)
         # !!!!
-        # tf.train.write_graph(sess.graph_def, '/tmp/tf/log', 'graph.pb')
+        tf.train.write_graph(sess.graph_def, '/tmp/tf/log', 'graph.pb', as_text=False)
+        # tf.train.write_graph(my_graph, path_to_model_pb, 'saved_model.pb', as_text=False)
         # !!!!
