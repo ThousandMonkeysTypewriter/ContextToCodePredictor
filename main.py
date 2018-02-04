@@ -25,8 +25,7 @@ def main(_):
     if FLAGS.task == "addition":
         # Generate Data (if necessary)
         if FLAGS.generate:
-            generate_addition('train', FLAGS.num_training, True, 100)
-            generate_addition('test', FLAGS.num_test, True, 100)
+            generate_addition()
 
         # Train Model (if necessary)
         if FLAGS.do_train:

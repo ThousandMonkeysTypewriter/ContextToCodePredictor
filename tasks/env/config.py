@@ -14,9 +14,9 @@ CKPT_PATH = "log/model.ckpt"
 DSL_DATA_PATH = "dsl/data/data_buffer.json"
 
 CONFIG = {
-    "ENVIRONMENT_ROW": 5,         # Input 1, Input 2, Carry, Output
-    "ENVIRONMENT_COL": 5,         # 10-Digit Maximum for Addition Task
-    "ENVIRONMENT_DEPTH": 74,      # Size of each element vector => One-Hot, Options: 0-9
+    "ENVIRONMENT_ROW": 9,         # Input 1, Input 2, Carry, Output
+    "ENVIRONMENT_COL": 9,         # 10-Digit Maximum for Addition Task
+    "ENVIRONMENT_DEPTH": 101,      # Size of each element vector => One-Hot, Options: 0-9
 
     "ARGUMENT_NUM": 1,            # Maximum Number of Program Arguments
     "ARGUMENT_DEPTH": 75,         # Size of Argument Vector => One-Hot, Options 0-9, Default (10)
@@ -74,8 +74,11 @@ def get_env(data):
     # print(data)
     env[0][data["answer"]] = 1
     env[1][data["output"]] = 1
-    env[2][data["period"]] = 1
-    env[3][data["client_id"]] = 1
+    env[2][data["date1"]] = 1
+    env[3][data["date2"]] = 1
+    env[4][data["date1_diff"]] = 1
+    env[5][data["date2_diff"]] = 1
+    env[6][data["client_id"]] = 1
 
     return env.flatten()
 

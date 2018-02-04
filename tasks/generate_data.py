@@ -33,7 +33,7 @@ def exec_ (orig, formatted):
         dsl.true_ans, trace_ans, orig, formatted)
     return dsl.trace
 
-def generate_addition( prefix, num_examples, debug, debug_every=1000):
+def generate_addition( ):
     """
     Generates addition data with the given string prefix (i.e. 'train', 'test') and the specified
     number of examples.
@@ -47,7 +47,9 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
 
     # times = pd.date_range('2000-10-01', end='2017-12-31', freq='5min').tolist()
     #
-    data = []
+    train_data = []
+    test_data = []
+    count = 0
     # dates = []
     # members_set = set()
     # for i in np.random.choice(times, size=num_examples, replace=False):
@@ -69,6 +71,7 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
     # members_list = list(members_set)
     # count = 0
     for row_r in parsed:
+        count += 1
         row = collections.OrderedDict(sorted(row_r.items()))
         trace = []
         for key, values in row.items():
@@ -98,8 +101,14 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
                             environment['answer'] = e_v.get('value')
                         elif e_k == 'output':
                             environment['output'] = e_v.get('value')
-                        elif e_k == 'period':
-                            environment['period'] = e_v.get('value')
+                        elif e_k == 'date2':
+                            environment['date2'] = e_v.get('value')
+                        elif e_k == 'date2_diff':
+                            environment['date2_diff'] = e_v.get('value')
+                        elif e_k == 'date1':
+                            environment['date1'] = e_v.get('value')
+                        elif e_k == 'date1_diff':
+                            environment['date1_diff'] = e_v.get('value')
                         elif e_k == 'client_id':
                             environment['client_id'] = e_v.get('value')
                     step['environment'] = environment
@@ -121,6 +130,11 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
             trace.append(step)
         print(trace)
                     # ({"command": "MOVE_PTR", "id": P["MOVE_PTR"], "arg": [OUT_PTR, LEFT], "terminate": False})
-        data.append(trace)
-    with open('tasks/env/data/{}.pik'.format(prefix), 'wb') as f:
-        pickle.dump(data, f)
+        if (count % 5==0):
+            test_data.append(trace)
+        else:
+            train_data.append(trace)
+    with open('tasks/env/data/test.pik', 'wb') as f:
+        pickle.dump(test_data, f)
+    with open('tasks/env/data/train.pik', 'wb') as f:
+        pickle.dump(train_data, f)
