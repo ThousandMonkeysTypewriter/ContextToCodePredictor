@@ -43,7 +43,7 @@ def evaluate_addition():
         # print("map variables")
 
         # Run REPL
-        for x in range(0, 10):
+        for x in range(0, 20):
             res = ""
             # try:
             repl(sess, npi, data, x)

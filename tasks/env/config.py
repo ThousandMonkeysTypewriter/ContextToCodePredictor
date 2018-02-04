@@ -14,8 +14,8 @@ CKPT_PATH = "log/model.ckpt"
 DSL_DATA_PATH = "dsl/data/data_buffer.json"
 
 CONFIG = {
-    "ENVIRONMENT_ROW": 3,         # Input 1, Input 2, Carry, Output
-    "ENVIRONMENT_COL": 3,         # 10-Digit Maximum for Addition Task
+    "ENVIRONMENT_ROW": 5,         # Input 1, Input 2, Carry, Output
+    "ENVIRONMENT_COL": 5,         # 10-Digit Maximum for Addition Task
     "ENVIRONMENT_DEPTH": 74,      # Size of each element vector => One-Hot, Options: 0-9
 
     "ARGUMENT_NUM": 1,            # Maximum Number of Program Arguments
@@ -71,8 +71,11 @@ def get_args(args, arg_in=True):
 def get_env(data):
     env = np.zeros((CONFIG["ENVIRONMENT_ROW"], CONFIG["ENVIRONMENT_DEPTH"]), dtype=np.int32)
 
+    # print(data)
     env[0][data["answer"]] = 1
-    env[1][data["is_redirect"]] = 1
+    env[1][data["output"]] = 1
+    env[2][data["period"]] = 1
+    env[3][data["client_id"]] = 1
 
     return env.flatten()
 

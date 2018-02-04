@@ -94,10 +94,14 @@ def generate_addition( prefix, num_examples, debug, debug_every=1000):
                     for e_k, e_v in v.items():
                         if e_k == 'terminate':
                             environment['terminate'] = e_v.get('value')
-                        if e_k == 'answer':
+                        elif e_k == 'answer':
                             environment['answer'] = e_v.get('value')
-                        if e_k == 'is_redirect':
-                            environment['is_redirect'] = e_v.get('value')
+                        elif e_k == 'output':
+                            environment['output'] = e_v.get('value')
+                        elif e_k == 'period':
+                            environment['period'] = e_v.get('value')
+                        elif e_k == 'client_id':
+                            environment['client_id'] = e_v.get('value')
                     step['environment'] = environment
                 elif k == 'argument':
                     args = {}
