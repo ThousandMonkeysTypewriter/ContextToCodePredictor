@@ -92,7 +92,7 @@ def generate_addition( ):
         #     if (k == "terminate"):
         #     print(key)
             for k, v in values.items():
-                if k == 'environment':
+                if k == 'supervised_env':
                     environment = {}
                     for e_k, e_v in v.items():
                         if e_k == 'terminate':

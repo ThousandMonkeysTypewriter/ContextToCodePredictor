@@ -109,7 +109,7 @@ def repl(session, npi, data, pos):
                 #     scratch.execute(prog_id, arg)
 
                 # print ("Input:  %s, %s, Output:  %s, %s" % (str(x), str(y), str(output), scratch.true_ans))
-                with open("log/prog_produced.txt", "a") as myfile:
+                with open("log/"+str(count)+"prog_produced.txt", "a") as myfile:
                     myfile.write(str(prog_id) + ", terminate: true\n")
                 return True
 
@@ -117,7 +117,7 @@ def repl(session, npi, data, pos):
                 # prog_name = PROGRAM_SET[prog_id][0]
 
                 # print([np.argmax(n_p), PROGRAM_SET[prog_id][0]], [np.argmax(n_args[0]), np.argmax(n_args[1])])
-                with open("log/prog_produced.txt", "a") as myfile:
+                with open("log/"+str(count)+"prog_produced.txt", "a") as myfile:
                     myfile.write(str(prog_id) + ","+str(np.argmax(t))+"\n")
 
             # cont = raw_input('Continue? ')
