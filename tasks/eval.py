@@ -60,8 +60,8 @@ def repl(session, npi, data, pos):
         f = open('log/numbers.txt', 'r+')
         f.truncate()
 
-        f = open('log/prog_orig.txt', 'r+')
-        f.truncate()
+        # f = open('log/prog_orig.txt', 'r+')
+        # f.truncate()
 
         f = open('log/prog_produced.txt', 'r+')
         f.truncate()

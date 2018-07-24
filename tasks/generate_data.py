@@ -138,3 +138,6 @@ def generate_addition( ):
         pickle.dump(test_data, f)
     with open('tasks/env/data/train.pik', 'wb') as f:
         pickle.dump(train_data, f)
+    # with open('tasks/env/data/train.pik1', 'a') as f:
+    #     for c in train_data:
+    #         f.write(str(c))
